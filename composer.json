@@ -1,0 +1,39 @@
+{
+  "name": "suilven/cricket-blog",
+  "type": "silverstripe-vendormodule",
+  "description": "Extensions to the blog module to allow for a cricket related website.",
+  "homepage": "https://github.com/suilven/cricket-blog",
+  "keywords": ["cricket","blog"],
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Gordon Anderson",
+      "role": "Developer",
+      "email": "gordon.b.anderson@gmail.com",
+      "homepage": "http://www.gordonbanderson.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.0",
+    "silverstripe/framework": "^4@dev"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.7",
+  },
+  "autoload": {
+    "psr-4": {
+      "Suilven\\CricketSite\\": "src/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    },
+    "expose": [
+      "admin/client/dist",
+      "client/dist"
+    ]
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
