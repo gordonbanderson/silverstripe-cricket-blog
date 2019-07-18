@@ -14,4 +14,8 @@ class Team extends DataObject
     private static $has_one = [
         'Club' => Club::class
     ];
+
+    private static $many_many = [
+        'Competitions' => Competition::class
+    ];
 }
