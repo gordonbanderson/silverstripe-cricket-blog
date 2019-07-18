@@ -1,3 +1,12 @@
+# Cricket Blog
+Content based module that introduces several content types for the purposes of creating a cricket related website based
+on the SilverStripe blog module.
+
+
+
+
+
+
 # SilverStripe Module Starter
 
 A starter kit that has everything you need to get underway with a new module for [SilverStripe v4][silverstripe].
