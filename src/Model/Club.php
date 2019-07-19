@@ -35,7 +35,6 @@ class Club extends DataObject
         ));
 
         $conf = GridFieldConfig_RelationEditor::create(20);
-
         $teamGrid = GridField::create(
             'Players',
             'Players',
