@@ -1,6 +1,10 @@
 ---
 Name: cricket-blog
 ---
+SilverStripe\Blog\Model\Blog:
+  allowed_children:
+    - SilverStripe\Blog\Model\Blog
+    - Suilven\CricketSite\Model\MatchReport
 
 # Configure Admin Extensions:
 
