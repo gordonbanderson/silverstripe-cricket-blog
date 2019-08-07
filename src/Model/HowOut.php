@@ -22,11 +22,7 @@ class HowOut extends DataObject
         'Player3Needed' => 'Boolean',
     ];
 
-    private static $has_one = [
-        'Player1' => Player::class,
-        'Player2' => Player::class,
-        'PlayerAssist' => Player::class
-    ];
+
 
     private static $has_many = [
         InningsEntry::class
@@ -96,7 +92,13 @@ class HowOut extends DataObject
 
             HowOut::create([
                     'Title' => 'Hit Wicket',
-                    'ShortTitle' => 'hit wicket',
+                    'ShortTitle' => 'hit wicket'
+                ]
+            )->write();
+
+            HowOut::create([
+                    'Title' => 'Did Not Bat',
+                    'ShortTitle' => 'DNB',
                     'Player2Needed' => true
                 ]
             )->write();
