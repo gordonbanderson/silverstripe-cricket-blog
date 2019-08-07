@@ -41,13 +41,17 @@ class Innings extends DataObject
     {
         $fields = parent::getCMSFields();
 
-        $teams = new ArrayList([
-           $this->Match()->HomeTeam(),
-           $this->Match()->AwayTeam()
-        ]);
-        $teamField = DropdownField::create('Team', 'Batting Team', $teams->
-        sort('Name')->
-        map('ID', 'Title')) ->setEmptyString('-- Select batting team --');
+        $homeTeam = $this->Match()->HomeTeam();
+        $awayTeam = $this->Match()->AwayTeam();
+        $teams = [
+            $homeTeam->ID => $homeTeam->Title,
+            $awayTeam->ID => $awayTeam->Title
+        ];
+
+
+
+        $teamField = DropdownField::create('TeamID', 'Batting Team', $teams)->
+            setEmptyString('-- Select batting team --');
         $fields->addFieldToTab('Root.Main', $teamField);
 
         $fields->addFieldToTab('Root.Entries', GridField::create(
