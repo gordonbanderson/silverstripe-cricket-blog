@@ -25,11 +25,25 @@ class Player extends DataObject
 
     private static $belongs_many_many = [
        'Clubs' => Club::class,
+        'Matches' => Match::class
+    ];
+
+    private static $has_many = [
+      'Innings' => InningsEntry::class
     ];
 
     private static $summary_fields = array(
         'DisplayName'
     );
+
+    private static $default_sort = '"Surname", "FirstName"';
+
+    private static $searchable_fields = array(
+        'FirstName',
+        'Surname',
+        'DisplayName',
+    );
+
 
     public function getCMSFields()
     {
@@ -48,6 +62,11 @@ class Player extends DataObject
         $fields->addFieldToTab('Root.Main', $photoField);
 
         return $fields;
+    }
+
+    public function getReverseName()
+    {
+        return $this->Surname . ',' . $this->FirstName;
     }
 
     public function getTitle()
