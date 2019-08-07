@@ -91,13 +91,13 @@ class Match extends DataObject
         map('ID', 'Title')) ->setEmptyString('-- Select home team --');
         $fields->addFieldToTab('Root.Main', $homeTeamField);
 
-        /*
+
         if ($this->HomeTeamID) {
             $confHome = GridFieldConfig_RelationEditor::create(20);
             $confHome->removeComponentsByType(GridFieldAddNewButton::class);
 
             // @todo This is not working
-            //$conf->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
+            $confHome->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
             //$sortable->setCustomRelationName('HomeTeamPlayers');
             $teamGridHome = GridField::create(
                 'HomeTeamPlayers',
@@ -108,7 +108,6 @@ class Match extends DataObject
 
             $fields->addFieldToTab('Root.HomeTeam', $teamGridHome);
         }
-        */
 
         $awayTeamField = DropdownField::create('AwayTeamID', 'Away Team', Team::get()->
         sort('Name')->
