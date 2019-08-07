@@ -44,17 +44,15 @@ class Innings extends DataObject
         $homeTeam = $this->Match()->HomeTeam();
         $awayTeam = $this->Match()->AwayTeam();
         $teams = [
-            $homeTeam->ID => $homeTeam->Title,
-            $awayTeam->ID => $awayTeam->Title
+            $homeTeam->ID => $homeTeam->Name,
+            $awayTeam->ID => $awayTeam->Name
         ];
-
-
 
         $teamField = DropdownField::create('TeamID', 'Batting Team', $teams)->
             setEmptyString('-- Select batting team --');
         $fields->addFieldToTab('Root.Main', $teamField);
 
-        $fields->addFieldToTab('Root.Entries', GridField::create(
+        $fields->addFieldToTab('Root.InningsEntries', GridField::create(
             'InningsEntries',
             'Individual Innings',
             $this->InningsEntries(),
@@ -66,7 +64,7 @@ class Innings extends DataObject
 
     public function getTitle()
     {
-        return $this->Name;
+        return $this->Team->Name;
     }
 
     // cannot get this to work for some reason, the trait for image tweaking is missing and the HTML needs to be converted
@@ -84,11 +82,11 @@ class Innings extends DataObject
     {
         $result = parent::validate();
 
-        if (!$this->HomeTeam()) {
+        if (!$this->Match()->HomeTeam()) {
             $result->addError('The home team is required');
         }
 
-        if (!$this->AwayTeam()) {
+        if (!$this->Match()->AwayTeam()) {
             $result->addError('The away team is required');
         }
 
