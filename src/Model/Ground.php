@@ -8,6 +8,7 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\View\HTML;
+use Smindel\GIS\Forms\MapField;
 
 class Ground extends DataObject
 {
@@ -15,6 +16,7 @@ class Ground extends DataObject
 
     private static $db = [
         'Name' => 'Varchar(255)',
+        'Location' => 'Geometry',
     ];
 
     private static $belongs_many_many = [
@@ -35,6 +37,15 @@ class Ground extends DataObject
             $this->Clubs(),
             GridFieldConfig_RecordEditor::create()
         ));
+
+        $fields->addFieldToTab(
+            'Root.Main',
+            MapField::create('Location')
+                ->setControl('polyline', false)
+                ->setControl('polygon', true)
+                ->enableMulti(true),
+            'Content'
+        );
 
         return $fields;
     }
