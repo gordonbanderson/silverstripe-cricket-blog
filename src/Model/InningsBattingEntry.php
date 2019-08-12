@@ -43,7 +43,12 @@ class InningsEntry extends DataObject
         $fields = parent::getCMSFields();
 
         $teamBatting = $this->Innings()->Team();
-        $players = $teamBatting->Club()->Players()->sort('Surname,FirstName');
+        if ($teamBatting == $this->Innings()->Match()->HomeTeam()) {
+            $players = $this->Innings()->Match()->HomeTeamPlayers();
+        } else {
+            $players = $this->Innings()->Match()->AwayTeamPlayers();
+        }
+
 
         $playersDropdown = $players->map('ID', 'ReverseName');
 
