@@ -25,7 +25,7 @@ class HowOut extends DataObject
 
 
     private static $has_many = [
-        InningsEntry::class
+        InningsBattingEntry::class
     ];
 
     public function requireDefaultRecords()
@@ -44,7 +44,7 @@ class HowOut extends DataObject
 
             HowOut::create([
                     'Title' => 'Caught',
-                    'ShortTitle' => '',
+                    'ShortTitle' => 'c',
                     'Player1Needed' => true,
                     'Player2Needed' => true
                 ]
@@ -113,6 +113,12 @@ class HowOut extends DataObject
             HowOut::create([
                     'Title' => 'Timed Out',
                     'ShortTitle' => 'timed out'
+                ]
+            )->write();
+
+            HowOut::create([
+                    'Title' => 'Not Out',
+                    'ShortTitle' => 'not out'
                 ]
             )->write();
         }

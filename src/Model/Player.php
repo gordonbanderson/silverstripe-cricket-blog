@@ -29,7 +29,7 @@ class Player extends DataObject
     ];
 
     private static $has_many = [
-      'Innings' => InningsEntry::class
+      'Innings' => InningsBattingEntry::class
     ];
 
     private static $summary_fields = array(

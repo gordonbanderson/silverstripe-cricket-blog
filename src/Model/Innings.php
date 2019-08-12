@@ -8,6 +8,9 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\View\HTML;
@@ -17,6 +20,10 @@ class Innings extends DataObject
     private static $table_name = 'CricketInnings';
 
     private static $db = [
+        'Wides' => 'Int',
+        'NoBalls' => 'Int',
+        'Byes' => 'Int',
+        'LegByes' => 'Int',
         'BattingSummary' => 'Text',
         'BowlingSummary' => 'Text',
         'TotalRuns' => 'Int',
@@ -29,11 +36,18 @@ class Innings extends DataObject
     ];
 
     private static $has_many = [
-        'InningsEntries' => InningsEntry::class
+        'InningsBattingEntries' => InningsBattingEntry::class,
+        'InningsBowlingEntries' => InningsBowlingEntry::class,
     ];
 
     private static $belongs_to = [
         Match::class
+    ];
+
+    private static $summary_fields = [
+        'Team.Name' => 'Innings Of',
+        'BattingSummary' => 'Batting',
+        'BowlingSummary' => 'Bowling'
     ];
 
 
@@ -52,30 +66,55 @@ class Innings extends DataObject
             setEmptyString('-- Select batting team --');
         $fields->addFieldToTab('Root.Main', $teamField);
 
-        $fields->addFieldToTab('Root.InningsEntries', GridField::create(
-            'InningsEntries',
-            'Individual Innings',
-            $this->InningsEntries(),
+        $fields->removeByName('InningsBattingEntries');
+        $fields->addFieldToTab('Root.Batting', GridField::create(
+            'InningsBattingEntries',
+            'Batting',
+            $this->InningsBattingEntries()->sort('Created'),
             GridFieldConfig_RecordEditor::create()
         ));
+
+        $fields->removeByName('InningsBowlingEntries');
+        $fields->addFieldToTab('Root.Bowling', GridField::create(
+            'InningsBowlingEntries',
+            'Bowling',
+            $this->InningsBowlingEntries()->sort('Created'),
+            GridFieldConfig_RecordEditor::create()
+        ));
+
+        $widesField = new NumericField('Wides', 'Wides');
+        $fields->addFieldToTab('Root.Main', $widesField);
+
+        $noballsField = new NumericField('NoBalls', 'No-balls');
+        $fields->addFieldToTab('Root.Main', $noballsField);
+
+        $byesField = new NumericField('Byes', 'Byes');
+        $fields->addFieldToTab('Root.Main', $byesField);
+
+        $legByesField = new NumericField('LegByes', 'Leg Byes');
+        $fields->addFieldToTab('Root.Main', $legByesField);
+
+
+        $totalRunsField = new NumericField('TotalRuns', 'Total Runs');
+        $fields->addFieldToTab('Root.Main', $totalRunsField);
+
+        $totalWicketsField = new NumericField('TotalWickets', 'Total Wickets');
+        $fields->addFieldToTab('Root.Main', $totalWicketsField);
+
+        $battingSummaryField = new TextareaField('BattingSummary', 'Batting Summary');
+        $fields->addFieldToTab('Root.Main', $battingSummaryField);
+
+        $bowlingSummaryField = new TextareaField('BowlingSummary', 'Bowling Summary');
+        $fields->addFieldToTab('Root.Main', $bowlingSummaryField);
 
         return $fields;
     }
 
     public function getTitle()
     {
-        return $this->Team->Name;
+        return 'Team: ' . $this->Team()->Name;
     }
 
-    // cannot get this to work for some reason, the trait for image tweaking is missing and the HTML needs to be converted
-    // and not returned raw
-    public function getPhotoThumbnail() {
-        // display a thumbnail of the Image from the has_one relation
-
-        /** @var Image $photo */
-        $photo = $this->Photo();
-        return $photo ? '<img src="' .  $photo->ThumbnailURL(60,90) . '"/>' : '';
-    }
 
 
     public function validate()
