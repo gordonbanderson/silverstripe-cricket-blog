@@ -126,7 +126,9 @@ class InningsBattingEntry extends DataObject
     }
 
     public function getStrikeRate() {
-        return $this->BallsFaced == 0 ? '-' : round(100*$this->Runs / $this->BallsFaced, 2);
+        $sr = $this->BallsFaced == 0 ? '-' : 100*$this->Runs / $this->BallsFaced;
+        return number_format((float)$sr, 2, '.', '');
+
     }
 
     public function getHowOutDescription() {
