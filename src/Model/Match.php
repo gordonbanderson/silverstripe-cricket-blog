@@ -161,6 +161,16 @@ class Match extends DataObject
         return $title;
     }
 
+
+    public function getFirstInnings() {
+        $result = $this->Innings()->limit(1,0)->first();
+        return $result;
+    }
+
+    public function getSecondInnings() {
+        return $this->Innings()->limit(1,1)->first();
+    }
+
     // cannot get this to work for some reason, the trait for image tweaking is missing and the HTML needs to be converted
     // and not returned raw
     public function getPhotoThumbnail() {

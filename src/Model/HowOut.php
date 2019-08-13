@@ -98,7 +98,7 @@ class HowOut extends DataObject
 
             HowOut::create([
                     'Title' => 'Did Not Bat',
-                    'ShortTitle' => 'DNB',
+                    'ShortTitle' => 'did not bat',
                     'Player2Needed' => true
                 ]
             )->write();

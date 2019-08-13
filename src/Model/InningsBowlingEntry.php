@@ -18,6 +18,7 @@ class InningsBowlingEntry extends DataObject
 
     private static $db = [
         'Overs' => 'Int',
+        'Balls' => 'Int',
         'Maidens' => 'Int',
         'Runs' => 'Int',
         'Wickets' => 'Int',
@@ -72,6 +73,9 @@ class InningsBowlingEntry extends DataObject
 
         $oversField = new NumericField('Overs', 'Overs');
         $fields->addFieldToTab('Root.Main', $oversField);
+
+        $ballsField = new NumericField('Balls', 'Balls');
+        $fields->addFieldToTab('Root.Main', $ballsField);
 
         $maidensField = new NumericField('Maidens', 'Maidens');
         $fields->addFieldToTab('Root.Main', $maidensField);
@@ -138,5 +142,13 @@ class InningsBowlingEntry extends DataObject
 
 
         return $fields;
+    }
+
+
+    public function getEconomyRate()
+    {
+        $er = 6*$this->Runs / (6 * $this->Overs + $this->Balls);
+        return number_format((float)$er, 2, '.', '');
+
     }
 }

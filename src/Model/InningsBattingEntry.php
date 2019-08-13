@@ -125,6 +125,37 @@ class InningsBattingEntry extends DataObject
         return $photo ? '<img src="' .  $photo->ThumbnailURL(60,90) . '"/>' : '';
     }
 
+    public function getStrikeRate() {
+        return $this->BallsFaced == 0 ? '-' : round(100*$this->Runs / $this->BallsFaced, 2);
+    }
+
+    public function getHowOutDescription() {
+        $ho = $this->HowOut();
+        $result = '';
+
+        switch ($ho->Title) {
+            case 'Bowled':
+                $result = $ho->ShortTitle . '. ' . $this->FieldingPlayer2->DisplayName;
+                break;
+            case 'Leg Before Wicket':
+                $result = $ho->ShortTitle . '. ' . $this->FieldingPlayer2->DisplayName;
+                break;
+            case 'Caught':
+                $result = $ho->ShortTitle . '. ' . $this->FieldingPlayer1->DisplayName;
+                $result .= ', b. ' . $this->FieldingPlayer2->DisplayName;
+                break;
+            case 'Stumped':
+                $result = $ho->ShortTitle . '. ' . $this->FieldingPlayer1->DisplayName;
+                $result .= ', b. ' . $this->FieldingPlayer2->DisplayName;
+                break;
+            default:
+                $result = $ho->ShortTitle;
+                break;
+        }
+
+        return $result;
+    }
+
 
 
 

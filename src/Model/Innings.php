@@ -115,6 +115,9 @@ class Innings extends DataObject
         return 'Team: ' . $this->Team()->Name;
     }
 
+    public function getTotalExtras() {
+        return $this->Wides + $this->NoBalls + $this->Byes + $this->LegByes;
+    }
 
 
     public function validate()
