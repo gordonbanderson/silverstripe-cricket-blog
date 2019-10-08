@@ -208,4 +208,18 @@ class Match extends DataObject
         return $this->getManyManyComponents('AwayTeamPlayers')->sort('SortOrder');
     }
 
+
+    /**
+     * Return a string such as 'Arbroath United CC v Stirling CC'
+     */
+    public function matchHeading()
+    {
+        return $this->HomeTeam()->Name . ' v ' . $this->AwayTeam()->Name;
+    }
+
+    public function matchByLine()
+    {
+        return 'Played at ' . $this->Ground()->Name . ' on ' . $this->When;
+    }
+
 }
