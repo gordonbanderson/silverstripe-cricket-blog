@@ -104,4 +104,9 @@ class Player extends DataObject
         }
     }
 
+    public function Link()
+    {
+        return '/players/show/' . $this->Slug;
+    }
+
 }
