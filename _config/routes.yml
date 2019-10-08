@@ -1,0 +1,12 @@
+---
+Name: cricket-routes
+After:
+  - '#rootroutes'
+  - '#coreroutes'
+---
+SilverStripe\Control\Director:
+  rules:
+    # The double slash is IMPORTANT, otherwise the routing thinks there is an extra part of the URL and matching fails
+    # e.g. /players/show/john-smith ignored the /show/ part and thought the action was john-smith, resulting in
+    # 404 not found
+    'players//': 'Suilven\CricketSite\Controller\PlayersController'
