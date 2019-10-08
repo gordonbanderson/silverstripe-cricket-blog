@@ -13,3 +13,9 @@ SilverStripe\Admin\LeftAndMain:
     - "suilven/cricket-blog: admin/client/dist/styles/bundle.css"
   extra_requirements_javascript:
     - "suilven/cricket-blog: admin/client/dist/js/bundle.js"
+
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - Suilven\CricketSite\SiteConfig\CricketSiteConfig
+
+
