@@ -219,7 +219,9 @@ class Match extends DataObject
 
     public function matchByLine()
     {
-        return 'Played at ' . $this->Ground()->Name . ' on ' . $this->When;
+        $when = strtotime($this->When);
+
+        return  $this->Ground()->Name . ' ' . date('d/m/Y, H:i', $when);
     }
 
 }
