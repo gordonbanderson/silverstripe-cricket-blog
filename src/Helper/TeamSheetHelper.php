@@ -25,7 +25,7 @@ class TeamSheetHelper
         $this->padding = 20;
         $this->headingColor = '#000099';
         $this->bylineColor = '#000099';
-        $this->logo = 'themes/ssclient-core-theme/dist/img/furniture/cms-edit-logo.png';
+        $this->logo = 'themes/ssclient-core-theme/dist/img/furniture/logo-trans.png';
         $playerSquareSize = 240;
         $playerPadding = 40;
         $topRowOffsetX = (1920-($playerSquareSize + $playerPadding)*6)/2 + $playerPadding / 2;
@@ -46,7 +46,7 @@ class TeamSheetHelper
         }
 
         $players = $players->toArray();
-        $topRowY = 250; // @todo calculate this
+        $topRowY = 240+2*$this->padding; // @todo calculate this
         $secondRowY = $topRowY + $this->padding + $playerPadding + $playerSquareSize + 36;
 
 
@@ -61,15 +61,16 @@ class TeamSheetHelper
         $img = $manager->canvas(1920, 1080, '#fff');
 
 
-        $img->insert('public/players.jpg', '',0,0);
-        $img->greyscale()->blur(5);
-        //rgb(176,48,96)
-        $img->colorize(100, 38, 75);
+        $img->insert('public/aucc-bg-2.jpg', '',0,0);
+       // $img->greyscale()->blur(5);
+      //  $img->colorize(100, 38, 75);
 
 
         $this->writeText($img, $matchHeading, 970,$this->padding, 48);
         $this->writeText($img, $matchByline, 970,$this->padding + $this->fontSize * 1.2, 36);
         $img->insert($this->logo, '', $this->padding,$this->padding);
+
+        $this->headingColor = '#800';
 
         // now, the players
         $positions = [
@@ -102,19 +103,50 @@ class TeamSheetHelper
             $photo = $player->PhotoID ? $player->Photo() : $emtpyPlayerImage;
             error_log('LINK:' . $photo->getFilename());
             error_log('SQUARE SIZE: ' . $playerSquareSize);
+
+            /** @var \SilverStripe\Assets\Image $scaled */
             $scaled = $photo->Fit($playerSquareSize, $playerSquareSize);
             error_log('SCALED:' . $scaled->getURL());
 
+            $scaledWidth = $scaled->getWidth();
+
             $filepath = 'public/' . $scaled->getURL();
             error_log(print_r($position, 1));
-            $x = $position[0];
+            $x = $position[0] ; // ;
             $y = $position[1];
-            $img->insert($filepath, '',$x, $y);
+            $img->insert($filepath, '',$x + ($playerSquareSize - $scaledWidth)/2, $y);
             $textX = $x + $playerSquareSize/2;
             $textY = $y + $playerSquareSize + $this->padding;
             $this->writeText($img, $player->DisplayName, $textX, $textY, 24);
         }
+
+
+
+        // sponsor logos
+        // @todo this should be an extension
+        // hardwired positions
+
+        // 248x89
+        $img->insert('themes/ssclient-core-theme/dist/img/furniture/sponsor-tailend-teamsheet.png',
+            '',
+            1920-248-$this->padding,
+            1080-89-$this->padding
+        );
+
+        $img->insert('themes/ssclient-core-theme/dist/img/furniture/sponsor-angus-soft-fruits-teamsheet.gif',
+            '',
+            $this->padding,
+            1080-120-$this->padding
+        );
+
+        $img->insert('themes/ssclient-core-theme/dist/img/furniture/citylets-logo.png',
+            '',
+            1920-300-$this->padding,
+            3*$this->padding
+        );
+
         $img->save('public/test.png');
+
     }
 
 
@@ -124,7 +156,7 @@ class TeamSheetHelper
         $img->text($text, $x, $y, function ($font) {
             // $font->file('foo/bar.ttf');
             // @todo Make this configurable
-            $font->file('public/Roboto-Regular.ttf');
+            $font->file('public/Roboto-Medium.ttf');
             $font->size($this->fontSize);
             $font->color($this->headingColor);
             $font->align('center');
