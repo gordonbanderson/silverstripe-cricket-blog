@@ -145,6 +145,15 @@ class TeamSheetHelper
             3*$this->padding
         );
 
+
+        // footer things
+        // @todo Extension
+        $img->insert('public/pavilion.png',
+            '',
+            586,
+            1080-140
+        );
+
         $img->save('public/test.png');
 
     }
