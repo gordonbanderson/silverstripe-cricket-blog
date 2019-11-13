@@ -29,7 +29,7 @@ class Team extends DataObject
         $result = parent::validate();
 
         if(Team::get()->filter(['Name' => $this->Name])->count() > 0) {
-            $result->error('Team Name Must Be Unique');
+            $result->addError('Team Name Must Be Unique');
         }
 
         return $result;

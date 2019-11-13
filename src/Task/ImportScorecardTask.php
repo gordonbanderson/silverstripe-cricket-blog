@@ -51,11 +51,4 @@ class ImportScorecardTask extends BuildTask
         $helper->importScorecardFromSpreadsheet($spreadsheet);
     }
 
-
-
-
-
-
-
-
 }
