@@ -11,6 +11,7 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 use Suilven\CricketSite\Model\Club;
+use Suilven\CricketSite\Model\Player;
 use Suilven\CricketSite\Model\Team;
 use Suilven\Sluggable\Helper\SluggableHelper;
 
@@ -29,6 +30,10 @@ class ImportScorecardHelper
         $spreadsheet = IOFactory::load($spreadsheetFilePath);
 
         $this->parseClubAndTeams($spreadsheet);
+
+
+        $this->parseInnings($spreadsheet);
+
 
     }
 
@@ -80,6 +85,23 @@ class ImportScorecardHelper
         return $team;
     }
 
+    private function createOrGetPlayer($club, $fieldValue)
+    {
+        $splits = explode(' ', $fieldValue);
+        $params = [];
+
+        // this logic may not work for some asian names, these will need fixed by hand
+        $params['FirstName'] = $splits[0];
+        if (sizeof($splits > 1)) {
+            $params['Surname'] = $splits[1];
+        }
+
+        $player = $this->createOrGetBySlug(Player::class, $fieldValue, 'DisplayName', $params);
+        $player->write();
+
+        //
+        return $player;
+    }
 
     /**
      * @param DataObject $clazz
@@ -111,6 +133,38 @@ class ImportScorecardHelper
             }
             $instance->write();
             return $instance;
+        }
+    }
+
+    /**
+     * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $spreadsheet
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
+    public function parseInnings(\PhpOffice\PhpSpreadsheet\Spreadsheet $spreadsheet)
+    {
+        $sheet = $spreadsheet->getSheet(1);
+        $battingClubName = $sheet->getCell('B1')->getCalculatedValue();
+        $slugHelper = new SluggableHelper();
+        $slug = $slugHelper->getSlug($battingClubName);
+        $teamBatting = null;
+        switch($slug)
+        {
+            case $this->homeClub->Slug:
+                $teamBatting = $this->homeTeam;
+                break;
+            case $this->awayClub->Slug:
+                $teamBatting = $this->awayTeam;
+                break;
+            default:
+                user_error('The team batting could not be determined from the value ' . $battingClubName);
+                break;
+        }
+
+        for ($i =4; $i <=14; $i++) {
+            $playerName = $sheet->getCell('A' . $i)->getCalculatedValue();
+            error_log($playerName);
+            $this->createOrGetPlayer($teamBatting, $playerName);
+
         }
     }
 }
