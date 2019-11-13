@@ -24,6 +24,13 @@ class Club extends DataObject
         'Grounds' => Ground::class
     ];
 
+    private static $default_sort = 'Name';
+
+    private static $summary_fields = [
+        'Name' => 'Name',
+        'Slug' => 'Slug'
+    ];
+
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
@@ -45,5 +52,16 @@ class Club extends DataObject
         $fields->addFieldToTab('Root.Players', $teamGrid);
 
         return $fields;
+    }
+
+
+    public function validate() {
+        $result = parent::validate();
+
+        if(Club::get()->filter(['Name' => $this->Name])->count() > 0) {
+            $result->addError('Team Name Must Be Unique');
+        }
+
+        return $result;
     }
 }

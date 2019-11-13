@@ -26,7 +26,7 @@ class Player extends DataObject
     ];
 
     private static $belongs_many_many = [
-       'Clubs' => Club::class,
+        'Clubs' => Club::class,
         'Matches' => Match::class
     ];
 
@@ -34,9 +34,13 @@ class Player extends DataObject
       'Innings' => InningsBattingEntry::class
     ];
 
-    private static $summary_fields = array(
-        'DisplayName'
-    );
+
+    private static $summary_fields = [
+        'FirstName' => 'FirstName',
+        'Surname' => 'Surname',
+        'Name' => 'DisplayName',
+        'Slug' => 'Slug'
+    ];
 
     private static $default_sort = '"Surname", "FirstName"';
 

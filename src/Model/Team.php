@@ -18,4 +18,20 @@ class Team extends DataObject
     private static $many_many = [
         'Competitions' => Competition::class
     ];
+
+    private static $summary_fields = [
+        'Name' => 'Name',
+        'Slug' => 'Slug'
+    ];
+
+
+    public function validate() {
+        $result = parent::validate();
+
+        if(Team::get()->filter(['Name' => $this->Name])->count() > 0) {
+            $result->error('Team Name Must Be Unique');
+        }
+
+        return $result;
+    }
 }
