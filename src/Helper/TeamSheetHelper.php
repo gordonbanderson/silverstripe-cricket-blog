@@ -1,6 +1,6 @@
 <?php
 
-namespace Suilven\CricketSite\Model;
+namespace Suilven\CricketSite\Helper;
 
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
