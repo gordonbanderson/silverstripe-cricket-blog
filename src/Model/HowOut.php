@@ -22,6 +22,13 @@ class HowOut extends DataObject
         'Player3Needed' => 'Boolean',
     ];
 
+    private static $indexes = [
+        'ShortTitleIndex' => [
+            'type' => 'unique',
+            'columns' => ['ShortTitle'],
+        ],
+    ];
+
 
 
     private static $has_many = [
