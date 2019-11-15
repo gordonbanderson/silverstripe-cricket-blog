@@ -43,6 +43,7 @@ class Innings extends DataObject
     private static $has_many = [
         'InningsBattingEntries' => InningsBattingEntry::class,
         'InningsBowlingEntries' => InningsBowlingEntry::class,
+        'FOW' => FallOfWicket::class
     ];
 
     private static $belongs_to = [
@@ -72,21 +73,31 @@ class Innings extends DataObject
         $fields->addFieldToTab('Root.Main', $teamField);
 
         $fields->removeByName('InningsBattingEntries');
-        $inningsGridCfg = GridFieldConfig_RecordEditor::create();
-        $inningsGridCfg->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
+        $inningsBattingGridCfg = GridFieldConfig_RecordEditor::create();
+        $inningsBattingGridCfg->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
         $fields->addFieldToTab('Root.Batting', GridField::create(
             'InningsBattingEntries',
             'Batting',
             $this->InningsBattingEntries()->sort('Created'),
-            $inningsGridCfg
+            $inningsBattingGridCfg
+        ));
+
+        $fowGridCfg = GridFieldConfig_RecordEditor::create();
+        $fields->addFieldToTab('Root.Batting', GridField::create(
+            'FOW',
+            'Fall of Wickets',
+            $this->FOW()->sort('Runs'),
+            $fowGridCfg
         ));
 
         $fields->removeByName('InningsBowlingEntries');
+        $inningsBowlingGridCfg = GridFieldConfig_RecordEditor::create();
+        $inningsBowlingGridCfg->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
         $fields->addFieldToTab('Root.Bowling', GridField::create(
             'InningsBowlingEntries',
             'Bowling',
             $this->InningsBowlingEntries()->sort('Created'),
-            GridFieldConfig_RecordEditor::create()
+            $inningsBowlingGridCfg
         ));
 
         $widesField = new NumericField('Wides', 'Wides');
@@ -100,7 +111,6 @@ class Innings extends DataObject
 
         $legByesField = new NumericField('LegByes', 'Leg Byes');
         $fields->addFieldToTab('Root.Main', $legByesField);
-
 
         $penaltyRunsField = new NumericField('PenaltyRuns', 'Penalty Runs');
         $fields->addFieldToTab('Root.Main', $penaltyRunsField);
