@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use SilverStripe\ORM\DataObject;
 use Suilven\CricketSite\Model\Club;
 use Suilven\CricketSite\Model\Competition;
+use Suilven\CricketSite\Model\FallOfWicket;
 use Suilven\CricketSite\Model\Ground;
 use Suilven\CricketSite\Model\HowOut;
 use Suilven\CricketSite\Model\Innings;
@@ -48,11 +49,11 @@ class ImportScorecardHelper
     {
         $sheet = $spreadsheet->getSheet(0);
         $homeClubName = $sheet->getCell('B1')->getCalculatedValue();
-        $this->homeClub = $this->createOrGetClubBySlug( $homeClubName);
+        $this->homeClub = $this->createOrGetClubBySlug($homeClubName);
         error_log($this->homeClub);
 
         $awayClubName = $sheet->getCell('B2')->getCalculatedValue();
-        $this->awayClub = $this->createOrGetClubBySlug( $awayClubName);
+        $this->awayClub = $this->createOrGetClubBySlug($awayClubName);
         error_log('HC: ' . $homeClubName);
         error_log('AC: ' . $awayClubName);
 
@@ -130,6 +131,7 @@ class ImportScorecardHelper
         return $team;
     }
 
+    // @todo Filter by club
     private function createOrGetPlayer($team, $fieldValue)
     {
         $splits = explode(' ', $fieldValue);
@@ -138,7 +140,7 @@ class ImportScorecardHelper
         // this logic may not work for some asian names, these will need fixed by hand
         $params['FirstName'] = $splits[0];
         $params['DisplayName'] = $splits[0];
-        if (sizeof($splits ) > 1) {
+        if (sizeof($splits) > 1) {
             $params['Surname'] = $splits[1];
             $params['DisplayName'] = $splits[0] . ' ' . $splits[1];
         }
@@ -177,7 +179,7 @@ class ImportScorecardHelper
 
             $instance->Name = $fieldValue;
 
-            foreach($params as $key => $value) {
+            foreach ($params as $key => $value) {
                 $instance->$key = $value;
                 error_log("Set {$key} to {$value}");
             }
@@ -196,7 +198,8 @@ class ImportScorecardHelper
 
         $firstInnings = $this->parseInnings($spreadsheet->getSheet(1));
         $match->Innings()->add($firstInnings);
-        //$this->parseInnings($spreadsheet->getSheet(2));
+        $secondInnings = $this->parseInnings($spreadsheet->getSheet(2));
+        $match->Innings()->add($secondInnings);
     }
 
     /**
@@ -271,6 +274,74 @@ class ImportScorecardHelper
         $innings->write();
 
 
+        $this->parseBattingScorecard($sheet, $teamBatting, $homeTeamBatting, $teamBowling, $innings);
+        $this->parseFallOfWickets($sheet, $teamBatting, $innings);
+        $this->parseBowlingScorecard($sheet, $teamBatting, $homeTeamBatting, $teamBowling, $innings);
+
+        return $innings;
+    }
+
+    public function parseBowlingScorecard(Worksheet $sheet, $teamBatting, bool $homeTeamBatting, $teamBowling, Innings $innings)
+    {
+        for ($i = 44; $i <= 54; $i++) {
+            $bowlerName = $sheet->getCell('A' . $i)->getCalculatedValue();
+            if (strlen($bowlerName) > 0) {
+                $overs = $sheet->getCell('B' . $i)->getCalculatedValue();
+                $maidens = $sheet->getCell('C' . $i)->getCalculatedValue();
+                $runs = $sheet->getCell('D' . $i)->getCalculatedValue();
+                $wickets = $sheet->getCell('E' . $i)->getCalculatedValue();
+                $wides = $sheet->getCell('F' . $i)->getCalculatedValue();
+                $noballs = $sheet->getCell('G' . $i)->getCalculatedValue();
+                $fours = $sheet->getCell('H' . $i)->getCalculatedValue();
+                $sixes = $sheet->getCell('I' . $i)->getCalculatedValue();
+
+                $bowler = $this->createOrGetPlayer($teamBowling, $bowlerName);
+                $bowlingEntry = new InningsBowlingEntry();
+                $bowlingEntry->InningsID = $innings->ID;
+                $bowlingEntry->BowlerID = $bowler->ID;
+                $bowlingEntry->Overs = floor($overs);
+                $bowlingEntry->Balls = 10 * ($overs - floor($overs));
+                $bowlingEntry->Maidens = $maidens;
+                $bowlingEntry->Runs = $runs;
+                $bowlingEntry->Wickets = $wickets;
+                $bowlingEntry->Wides = $wides;
+                $bowlingEntry->NoBalls = $noballs;
+                $bowlingEntry->Fours = $fours;
+                $bowlingEntry->Sixes = $sixes;
+                $bowlingEntry->write();
+            }
+        }
+    }
+
+
+    public function parseFallOfWickets(Worksheet $sheet, $teamBatting,  Innings $innings)
+    {
+        for ($i = 30; $i <= 39; $i++) {
+            $runs = $sheet->getCell('A' . $i)->getCalculatedValue();
+            $playerName = $sheet->getCell('B' . $i)->getCalculatedValue();
+
+            if (strlen($playerName) > 0) {
+                $batsman = $this->createOrGetPlayer($teamBatting, $playerName);
+                $fow = new FallOfWicket();
+                $fow->Runs = $runs;
+                $fow->BatsmanID = $batsman->ID;
+                $fow->InningsID = $innings->ID;
+                $fow->write();
+            }
+
+        }
+    }
+
+            /**
+     * @param Worksheet $sheet
+     * @param $teamBatting
+     * @param bool $homeTeamBatting
+     * @param $teamBowling
+     * @param Innings $innings
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
+    public function parseBattingScorecard(Worksheet $sheet, $teamBatting, bool $homeTeamBatting, $teamBowling, Innings $innings)
+    {
         for ($i = 4; $i <= 14; $i++) {
             $playerName = $sheet->getCell('A' . $i)->getCalculatedValue();
             error_log($playerName);
@@ -323,23 +394,6 @@ class ImportScorecardHelper
 
             $innings->InningsBattingEntries()->add($inningsEntry);
 
-            /*
-             *  private static $db = [
-        'Runs' => 'Int',
-
-        // if this is null, balls faced was not recorded
-        'TeamScore' => 'Int'
-    ];
-
-    private static $has_one = [
-        'HowOut' => HowOut::class,
-
-    ];
-             */
-
-
         }
-
-        return $innings;
     }
 }
