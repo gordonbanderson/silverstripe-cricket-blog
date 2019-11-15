@@ -6,7 +6,10 @@ use SilverStripe\Assets\Image;
 use SilverStripe\Forms\DatetimeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextareaField;
@@ -14,6 +17,7 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\View\HTML;
+use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
 class Innings extends DataObject
 {
@@ -24,6 +28,7 @@ class Innings extends DataObject
         'NoBalls' => 'Int',
         'Byes' => 'Int',
         'LegByes' => 'Int',
+        'PenaltyRuns' => 'Int',
         'BattingSummary' => 'Text',
         'BowlingSummary' => 'Text',
         'TotalRuns' => 'Int',
@@ -67,11 +72,13 @@ class Innings extends DataObject
         $fields->addFieldToTab('Root.Main', $teamField);
 
         $fields->removeByName('InningsBattingEntries');
+        $inningsGridCfg = GridFieldConfig_RecordEditor::create();
+        $inningsGridCfg->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
         $fields->addFieldToTab('Root.Batting', GridField::create(
             'InningsBattingEntries',
             'Batting',
             $this->InningsBattingEntries()->sort('Created'),
-            GridFieldConfig_RecordEditor::create()
+            $inningsGridCfg
         ));
 
         $fields->removeByName('InningsBowlingEntries');
