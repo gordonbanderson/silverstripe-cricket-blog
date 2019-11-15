@@ -249,6 +249,7 @@ class ImportScorecardHelper
         $slug = $slugHelper->getSlug($battingClubName);
         $teamBatting = null;
         $teamBowling = null;
+        $homeTeamBatting = true;
         switch ($slug) {
             case $this->homeClub->Slug:
                 $teamBatting = $this->homeTeam;
@@ -257,6 +258,7 @@ class ImportScorecardHelper
             case $this->awayClub->Slug:
                 $teamBatting = $this->awayTeam;
                 $teamBowling = $this->homeTeam;
+                $homeTeamBatting = false;
                 break;
             default:
                 user_error('The team batting could not be determined from the value ' . $battingClubName);
@@ -274,6 +276,12 @@ class ImportScorecardHelper
             error_log($playerName);
             $batsman = $this->createOrGetPlayer($teamBatting, $playerName);
 
+            if ($homeTeamBatting) {
+                $this->match->HomeTeamPlayers()->add($batsman);
+            } else {
+                $this->match->AwayTeamPlayers()->add($batsman);
+            }
+
             $howoutShortTitle1 = $sheet->getCell('B' . $i);
             $howOut1 = HowOut::get()->filter(['ShortTitle' => $howoutShortTitle1])->first();
             $fielder1Name = $sheet->getCell('C' . $i);
@@ -282,6 +290,11 @@ class ImportScorecardHelper
             if (strlen($fielder1Name) > 0) {
                 error_log('NOT EMPTY!!!!');
                 $fielder1 = $this->createOrGetPlayer($teamBowling, $fielder1Name);
+                if ($homeTeamBatting) {
+                    $this->match->AwayTeamPlayers()->add($fielder1);
+                } else {
+                    $this->match->HomeTeamPlayers()->add($fielder1);
+                }
             }
 
             $howoutShortTitle2 = $sheet->getCell('D' . $i);
@@ -290,6 +303,11 @@ class ImportScorecardHelper
             $fielder2 = null;
             if (strlen($fielder2Name) > 0) {
                 $fielder2 = $this->createOrGetPlayer($teamBowling, $fielder2Name);
+                if ($homeTeamBatting) {
+                    $this->match->AwayTeamPlayers()->add($fielder2);
+                } else {
+                    $this->match->HomeTeamPlayers()->add($fielder2);
+                }
             }
             error_log($fielder2Name);
             $inningsEntry = new InningsBattingEntry();
