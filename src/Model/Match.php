@@ -61,7 +61,8 @@ class Match extends DataObject
       'HomeTeam.Name' => 'Home Team',
         'AwayTeam.Name' => 'Away Team',
         'When' => 'When',
-        'Status' => 'Status'
+        'Status' => 'Status',
+        'Created' => 'Created'
     ];
 
 
@@ -121,8 +122,6 @@ class Match extends DataObject
             $autoCompleteComponent = $confAway->getComponentByType(GridFieldAddExistingAutocompleter::class);
             $autoCompleteComponent->setResultsFormat('$Surname, $FirstName');
 
-
-
             // @todo This does not work
             $confAway->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
             //$sortable->setCustomRelationName('AwayTeanPlayers');
@@ -170,17 +169,6 @@ class Match extends DataObject
     public function getSecondInnings() {
         return $this->Innings()->limit(1,1)->first();
     }
-
-    // cannot get this to work for some reason, the trait for image tweaking is missing and the HTML needs to be converted
-    // and not returned raw
-    public function getPhotoThumbnail() {
-        // display a thumbnail of the Image from the has_one relation
-
-        /** @var Image $photo */
-        $photo = $this->Photo();
-        return $photo ? '<img src="' .  $photo->ThumbnailURL(60,90) . '"/>' : '';
-    }
-
 
     public function validate()
     {
