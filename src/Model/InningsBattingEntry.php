@@ -24,7 +24,10 @@ class InningsBattingEntry extends DataObject
         'Minutes' => 'Int',
         'Fours' => 'Int',
         'Sixes' => 'Int',
-        'TeamScore' => 'Int'
+        'TeamScore' => 'Int',
+
+        // sort order
+        'SortOrder' => 'Int'
     ];
 
     private static $has_one = [
@@ -37,7 +40,8 @@ class InningsBattingEntry extends DataObject
     ];
 
     private static $summary_fields = [
-      'Batsman.DisplayName' => 'Batsman',
+        'Batsman.Thumbnail' => 'Image',
+        'Batsman.DisplayName' => 'Batsman',
         'HowOut.ShortTitle' => 'How Out',
         'FieldingPlayer1.DisplayName' => 'Fielder',
         'FieldingPlayer2.DisplayName' =>'Bowler',
@@ -109,27 +113,19 @@ class InningsBattingEntry extends DataObject
         $fowField = new NumericField('TeamScore', 'Fall of Wicket');
         $fields->addFieldToTab('Root.Main', $fowField);
 
-
+        // this should be done by the GridFieldSortable widget
+        $fields->removeByName('SortOrder');
 
         return $fields;
     }
 
-
-    // cannot get this to work for some reason, the trait for image tweaking is missing and the HTML needs to be converted
-    // and not returned raw
-    public function getPhotoThumbnail() {
-        // display a thumbnail of the Image from the has_one relation
-
-        /** @var Image $photo */
-        $photo = $this->Photo();
-        return $photo ? '<img src="' .  $photo->ThumbnailURL(60,90) . '"/>' : '';
-    }
 
     public function getStrikeRate() {
         $sr = $this->BallsFaced == 0 ? '-' : 100*$this->Runs / $this->BallsFaced;
         return number_format((float)$sr, 2, '.', '');
 
     }
+
 
     public function getHowOutDescription() {
         $ho = $this->HowOut();
@@ -157,8 +153,5 @@ class InningsBattingEntry extends DataObject
 
         return $result;
     }
-
-
-
 
 }
