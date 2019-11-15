@@ -36,6 +36,7 @@ class Player extends DataObject
 
 
     private static $summary_fields = [
+        'Thumbnail' => 'Image',
         'FirstName' => 'FirstName',
         'Surname' => 'Surname',
         'Name' => 'DisplayName',
@@ -80,14 +81,10 @@ class Player extends DataObject
         return $this->DisplayName;
     }
 
-    // cannot get this to work for some reason, the trait for image tweaking is missing and the HTML needs to be converted
-    // and not returned raw
-    public function getPhotoThumbnail() {
-        // display a thumbnail of the Image from the has_one relation
-
-        /** @var Image $photo */
-        $photo = $this->Photo();
-        return $photo ? '<img src="' .  $photo->ThumbnailURL(60,90) . '"/>' : '';
+    public function getThumbnail()
+    {
+        // balancing act on size here, too large and the rows are spread out for the other info
+        return $this->Photo()->exists() ? $this->Photo()->Fill(28,28) : false;
     }
 
     public function onBeforeWrite()
