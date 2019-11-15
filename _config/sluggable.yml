@@ -1,0 +1,24 @@
+---
+Name: cricket-slugs
+---
+
+Suilven\CricketSite\Model\Competition:
+  extensions:
+    - Suilven\Sluggable\Extension\Sluggable
+  slug: Name
+
+Suilven\CricketSite\Model\Club:
+  extensions:
+    - Suilven\Sluggable\Extension\Sluggable
+  slug: Name
+
+Suilven\CricketSite\Model\Team:
+  extensions:
+    - Suilven\Sluggable\Extension\Sluggable
+  slug: Name
+
+Suilven\CricketSite\Model\Ground:
+  extensions:
+    - Suilven\Sluggable\Extension\Sluggable
+  slug: Name
+
