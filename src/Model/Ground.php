@@ -55,14 +55,4 @@ class Ground extends DataObject
         return $this->Name;
     }
 
-    // cannot get this to work for some reason, the trait for image tweaking is missing and the HTML needs to be converted
-    // and not returned raw
-    public function getPhotoThumbnail() {
-        // display a thumbnail of the Image from the has_one relation
-
-        /** @var Image $photo */
-        $photo = $this->Photo();
-        return $photo ? '<img src="' .  $photo->ThumbnailURL(60,90) . '"/>' : '';
-    }
-
 }
