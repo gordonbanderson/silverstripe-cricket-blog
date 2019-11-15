@@ -102,6 +102,9 @@ class Innings extends DataObject
         $fields->addFieldToTab('Root.Main', $legByesField);
 
 
+        $penaltyRunsField = new NumericField('PenaltyRuns', 'Penalty Runs');
+        $fields->addFieldToTab('Root.Main', $penaltyRunsField);
+
         $totalRunsField = new NumericField('TotalRuns', 'Total Runs');
         $fields->addFieldToTab('Root.Main', $totalRunsField);
 
