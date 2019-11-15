@@ -25,7 +25,10 @@ class InningsBowlingEntry extends DataObject
         'Wides' => 'Int',
         'NoBalls' => 'Int',
         'Fours' => 'Int',
-        'Sixes' => 'Int'
+        'Sixes' => 'Int',
+
+        // sort order
+        'SortOrder' => 'Int'
     ];
 
     private static $has_one = [
@@ -34,13 +37,12 @@ class InningsBowlingEntry extends DataObject
     ];
 
     private static $summary_fields = [
-      'Bowler.DisplayName' => 'Bowler',
-
+        'Bowler.Thumbnail' => 'Bowler',
+        'Bowler.DisplayName' => 'Bowler',
         'Overs' => 'O',
         'Maidens' => 'M',
         'Runs' => 'Runs',
         'Wickets' => 'Wickets',
-
     ];
 
     /**
