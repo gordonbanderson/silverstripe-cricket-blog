@@ -36,6 +36,7 @@ class Innings extends DataObject
     ];
 
     private static $has_one = [
+        // @todo this is bad naming, it is the batting team
         'Team' => Team::class,
         'Match' => Match::class
     ];
@@ -137,6 +138,37 @@ class Innings extends DataObject
 
     public function getTotalExtras() {
         return $this->Wides + $this->NoBalls + $this->Byes + $this->LegByes;
+    }
+
+    public function getExtrasDescription()
+    {
+        $extras = [];
+        if ($this->Wides > 0) {
+            $extras[] = $this->Wides . 'w';
+        }
+        if ($this->NoBalls > 0) {
+            $extras[] = $this->NoBalls . 'n';
+        }
+        if ($this->Byes > 0) {
+            $extras[] = $this->Byes . 'b';
+        }
+        if ($this->LegByes > 0) {
+            $extras[] = $this->LegByes . 'lb';
+        }
+        return implode(', ', $extras);
+    }
+
+    public function getBowlingTeam()
+    {
+        $result = null;
+        if ($this->Match()->HomeTeam() == $this->Team) {
+            $result = $this->Match()->AwayTeam();
+        } else {
+            $result = $this->Match()->HomeTeam();
+
+        }
+
+        return $result;
     }
 
 
