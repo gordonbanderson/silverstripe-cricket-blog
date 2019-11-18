@@ -136,13 +136,17 @@ class ImportScorecardPitcherooHelper
         error_log('I: ' . $i);
         // this contains 'Extras' with the breakdown as [0], [1] is the total of extras
         $extrasDiv = $batsmanDivs[$i]->find('div')[0];
-        error_log('----------------------------------');
-        $this->exploreNodeset($extrasDiv);
+
         $extrasBreakdown = $extrasDiv->find('div')[0]->find('span')[0]->innerHtml;
 
         $totalExtras = $extrasDiv->find('div')[1]->innerHtml;
         error_log('EXTRAS: ' . $totalExtras);
         error_log('EXTRAS: ' . $extrasBreakdown);
+
+        $totalsDiv = $batsmanDivs[$i+1]->find('div')[0];
+        error_log('----------------------------------');
+        error_log('TOTALS META: ' . $totalsDiv->find('span')[0]->innerHtml);
+        error_log('TOTAL: ' . $totalsDiv->find('div')[1]->innerHtml);
         die;
     }
 
