@@ -3,25 +3,8 @@
 namespace Suilven\CricketSite\Helper;
 
 use PHPHtmlParser\Dom;
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpParser\Node;
-use SilverStripe\ORM\DataObject;
-use Suilven\CricketSite\Model\Club;
-use Suilven\CricketSite\Model\Competition;
-use Suilven\CricketSite\Model\FallOfWicket;
-use Suilven\CricketSite\Model\Ground;
-use Suilven\CricketSite\Model\HowOut;
-use Suilven\CricketSite\Model\Innings;
-use Suilven\CricketSite\Model\InningsBattingEntry;
-use Suilven\CricketSite\Model\InningsBowlingEntry;
-use Suilven\CricketSite\Model\Match;
-use Suilven\CricketSite\Model\Player;
-use Suilven\CricketSite\Model\Team;
-use Suilven\Sluggable\Helper\SluggableHelper;
 
 class ImportScorecardPitcherooHelper
 {
