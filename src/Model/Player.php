@@ -7,6 +7,7 @@ use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\HTML;
 use SilverStripe\View\Parsers\URLSegmentFilter;
 
@@ -84,7 +85,14 @@ class Player extends DataObject
     public function getThumbnail()
     {
         // balancing act on size here, too large and the rows are spread out for the other info
-        return $this->Photo()->exists() ? $this->Photo()->Fill(28,28) : false;
+        return  $this->getPlayerImage()->Fill(28,28);
+    }
+
+    public function getPlayerImage()
+    {
+        $config = SiteConfig::current_site_config();
+        $emtpyPlayerImage = $config->EmptyPlayerImage();
+        return $this->Photo()->exists() ? $this->Photo() : $emtpyPlayerImage;
     }
 
     public function onBeforeWrite()
