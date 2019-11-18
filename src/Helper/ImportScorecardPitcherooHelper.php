@@ -26,30 +26,25 @@ use Suilven\Sluggable\Helper\SluggableHelper;
 class ImportScorecardPitcherooHelper
 {
 
-    private $homeClub;
-    private $awayClub;
+    /** @var Spreadsheet */
+    private $spreadsheet;
 
-    private $homeTeam;
-    private $awayTeam;
-
-    private $ground;
-    private $match;
-    private $competitionName;
+    /** @var int 1 or 2 depending on whether first or second innings */
+    private $innings;
 
 
     public function importScorecardFromURL($url)
     {
+        $this->spreadsheet = new Spreadsheet();
+        $this->initialiseSpreadsheet($this->spreadsheet);
+        $this->parsePitcheroo($this->spreadsheet, $url);
 
-        $spreadsheet = new Spreadsheet();
-        $this->initialiseSpreadsheet($spreadsheet);
-        $this->parsePitcheroo($spreadsheet, $url);
-
-        $writer = new Xlsx($spreadsheet);
+        $writer = new Xlsx($this->spreadsheet);
         $writer->save('test.xls');
     }
 
 
-    private function parsePitcheroo(&$spreadsheet, $url)
+    private function parsePitcheroo( $url)
     {
         $dom = new Dom();
         //$dom->loadFromUrl($url);
@@ -62,15 +57,15 @@ class ImportScorecardPitcherooHelper
         /** @var Dom\HtmlNode $shield */
         $shield = $dom->find('g[@id="shield]')[0];
         $inningsScorecardHTML = $shield->getParent()->getParent()->getParent()->getParent()->getParent()->getParent();
-        //$teamBatting = $inningsScorecardHTML->find('h3');
 
         $i = 0;
-
-
+        $this->innings = 1;
         $teamBatting = $this->getTeamBatting($inningsScorecardHTML);
+        $sheet = $this->spreadsheet->getSheet($this->innings);
+        $sheet->setCellValue('B1', $teamBatting);
 
-        //$this->beingParsingCard($inningsScorecardHTML);
-        // $this->parseFallOfWickets($inningsScorecardHTML);
+        $this->beingParsingCard($inningsScorecardHTML);
+        $this->parseFallOfWickets($inningsScorecardHTML);
         $this->parseBowlingCard($inningsScorecardHTML);
 
 
@@ -88,6 +83,8 @@ class ImportScorecardPitcherooHelper
 
     private function parseBowlingCard($inningsScorecardHTML)
     {
+        $sheet = $this->spreadsheet->getSheet($this->innings);
+
         $level1Divs = $inningsScorecardHTML->find('div');
         $level3Divs = $level1Divs[3];
         $level2Divs = $level3Divs->find('div');
@@ -96,15 +93,20 @@ class ImportScorecardPitcherooHelper
         for ($i=1; $i<sizeof($bowlingCard); $i++) {
             $entry = $entries[$i];
             $entryDivs = $entry->find('div')[0]->find('div');
-
-
-            //$this->exploreNodeset($entryDivs->find('div')[1]->innerHtml);
-
+            
             $bowler = $entryDivs->find('div')[1]->find('div')[0]->innerHtml;
             $overs = $entryDivs[1]->innerHtml;
             $maidens = $entryDivs[2]->innerHtml;
             $runs = $entryDivs[3]->innerHtml;
             $wickets = $entryDivs[4]->innerHtml;
+
+            $row = 43+$i;
+            $sheet->setCellValue('A' . $row, $bowler);
+            $sheet->setCellValue('B' . $row, $overs);
+            $sheet->setCellValue('C' . $row, $maidens);
+            $sheet->setCellValue('D' . $row, $runs);
+            $sheet->setCellValue('E' . $row, $wickets);
+
 
             error_log("{$bowler}    O{$overs} M{$maidens} R{$runs} W{$wickets}");
         }
@@ -127,6 +129,7 @@ class ImportScorecardPitcherooHelper
         $level1Divs = $inningsScorecardHTML->find('div');
         $fow = $level1Divs[3];
         $level2Divs = $fow->find('div');
+        $sheet = $this->spreadsheet->getSheet($this->innings);
 
         $fowRows = $level2Divs[2]->find('div');
         for($i=1; $i<sizeof($fowRows);$i++) {
@@ -135,7 +138,9 @@ class ImportScorecardPitcherooHelper
             $fowScore = $subDivs[0]->innerHtml;
             $batsman = $subDivs[1]->innerHtml;
             error_log($batsman . ' - ' . $fowScore);
-           // $this->exploreNodeset($singleFowNode);
+            $row = $i+29;
+            $sheet->setCellValue('A' . $row, $fowScore);
+            $sheet->setCellValue('B' . $row, $batsman);
 
         }
     }
@@ -147,6 +152,7 @@ class ImportScorecardPitcherooHelper
     private function parseBattingCard($nodes)
     {
         $batsmanDivs = $nodes->find('div');
+        $sheet = $this->spreadsheet->getSheet($this->innings);
         for($i = 1; $i<sizeof($nodes); $i++) {
             $batsmanNodeset = $batsmanDivs[$i];
             $level3Divs = $batsmanNodeset->find('div');
@@ -165,8 +171,7 @@ class ImportScorecardPitcherooHelper
             error_log('BATSMAN:' . $batsmanName);
             $dismissal = $avatarBlock->find('span')[0]->innerHtml;
             error_log('DISMISSAL: ' . $dismissal);
-          //  $this->exploreNodeset($avatarBlock->find('div')[0]);
-         //   die;
+
             $runs = $level4Divs[1]->innerHtml;
             $balls = $level4Divs[2]->innerHtml;
             $fours = $level4Divs[3]->innerHtml;
@@ -176,6 +181,12 @@ class ImportScorecardPitcherooHelper
             error_log('FOURS: ' . $fours);
             error_log('SIXES: ' . $sixes);
             error_log('----');
+            $row = $i+3;
+            $sheet->setCellValue('A' . $row, $batsmanName);
+            $sheet->setCellValue('F' . $row, $runs);
+            $sheet->setCellValue('G' . $row, $balls);
+            $sheet->setCellValue('H' . $row, $fours);
+            $sheet->setCellValue('I' . $row, $sixes);
         }
 
         error_log('I: ' . $i);
@@ -230,9 +241,9 @@ class ImportScorecardPitcherooHelper
     /**
      * @param Spreadsheet $spreadsheet
      */
-    private function initialiseSpreadsheet(&$spreadsheet)
+    private function initialiseSpreadsheet()
     {
-        $battingSheet = $spreadsheet->createSheet();
+        $battingSheet = $this->spreadsheet->createSheet();
         $battingSheet->setTitle('First Innings');
 
         $this->addText($battingSheet, 'A1', 'Innings Of');
@@ -287,10 +298,10 @@ class ImportScorecardPitcherooHelper
 
         $battingSecondInningsSheet = clone $battingSheet;
         $battingSecondInningsSheet->setTitle('Second Innings');
-        $spreadsheet->addSheet($battingSecondInningsSheet);
+        $this->spreadsheet->addSheet($battingSecondInningsSheet);
 
         // now do the opening overview sheet
-        $overviewSheet = $spreadsheet->getSheet(0);
+        $overviewSheet = $this->spreadsheet->getSheet(0);
         $overviewSheet->setTitle('Overview');
 
         $headers = [
