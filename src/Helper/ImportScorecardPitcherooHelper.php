@@ -59,25 +59,17 @@ class ImportScorecardPitcherooHelper
         $inningsScorecardHTML = $shield->getParent()->getParent()->getParent()->getParent()->getParent()->getParent();
 
         $i = 0;
-        $this->innings = 1;
-        $teamBatting = $this->getTeamBatting($inningsScorecardHTML);
-        $sheet = $this->spreadsheet->getSheet($this->innings);
-        $sheet->setCellValue('B1', $teamBatting);
 
-        $this->beingParsingCard($inningsScorecardHTML);
-        $this->parseFallOfWickets($inningsScorecardHTML);
-        $this->parseBowlingCard($inningsScorecardHTML);
+        for ($i = 1; $i <= 2; $i++) {
+            $this->innings = $i;
+            $teamBatting = $this->getTeamBatting($inningsScorecardHTML);
+            $sheet = $this->spreadsheet->getSheet($this->innings);
+            $sheet->setCellValue('B1', $teamBatting);
 
-
-        //error_log('Batting: ' . $teamBatting);
-
-
-        /*
-         * Notes
-         * error_log($level1Divs[2]); << this has the toss winner
-         */
-
-
+            $this->beingParsingCard($inningsScorecardHTML);
+            $this->parseFallOfWickets($inningsScorecardHTML);
+            $this->parseBowlingCard($inningsScorecardHTML);
+        }
     }
 
 
@@ -86,14 +78,14 @@ class ImportScorecardPitcherooHelper
         $sheet = $this->spreadsheet->getSheet($this->innings);
 
         $level1Divs = $inningsScorecardHTML->find('div');
-        $level3Divs = $level1Divs[3];
+        $level3Divs = $level1Divs[2+$this->innings];
         $level2Divs = $level3Divs->find('div');
         $bowlingCard = $level2Divs[3];
         $entries = $bowlingCard->find('div');
         for ($i=1; $i<sizeof($bowlingCard); $i++) {
             $entry = $entries[$i];
             $entryDivs = $entry->find('div')[0]->find('div');
-            
+
             $bowler = $entryDivs->find('div')[1]->find('div')[0]->innerHtml;
             $overs = $entryDivs[1]->innerHtml;
             $maidens = $entryDivs[2]->innerHtml;
@@ -117,7 +109,10 @@ class ImportScorecardPitcherooHelper
     private function beingParsingCard($inningsScorecardHTML)
     {
         $level1Divs = $inningsScorecardHTML->find('div');
-        $battingCard = $level1Divs[3];
+        //$battingCard = $level1Divs[3];
+        $battingCard = $level1Divs[2+$this->innings];
+        $this->exploreNodeset($battingCard);
+
         $level2Divs = $battingCard->find('div');
         $this->parseBattingCard($level2Divs[1]);
         error_log('+++++++');
@@ -127,7 +122,7 @@ class ImportScorecardPitcherooHelper
     public function parseFallOfWickets($inningsScorecardHTML)
     {
         $level1Divs = $inningsScorecardHTML->find('div');
-        $fow = $level1Divs[3];
+        $fow = $level1Divs[2+$this->innings];
         $level2Divs = $fow->find('div');
         $sheet = $this->spreadsheet->getSheet($this->innings);
 
@@ -207,9 +202,13 @@ class ImportScorecardPitcherooHelper
 
     private function getTeamBatting($inningsScorecardHTML)
     {
-        $divs = $inningsScorecardHTML->find('div div');
-        $teamBattingDiv = $divs[0]->find('div')[1]->find('div]');
-        return $teamBattingDiv[4]->find('span')[0]->innerHtml;
+        $level1Divs = $inningsScorecardHTML->find('div');
+
+        $card = $level1Divs[2+$this->innings];
+        //$this->exploreNodeset($fow);
+        //die;
+        return $card->find('h3')[0]->innerHtml();
+        error_log($h3->innerHtml);
     }
 
     private function exploreNodeset($nodes)
