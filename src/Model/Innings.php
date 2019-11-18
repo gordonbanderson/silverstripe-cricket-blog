@@ -31,8 +31,12 @@ class Innings extends DataObject
         'PenaltyRuns' => 'Int',
         'BattingSummary' => 'Text',
         'BowlingSummary' => 'Text',
+        'TotalOvers' => 'Int',
+        'TotalBalls' => 'Int',
         'TotalRuns' => 'Int',
-        'TotalWickets' => 'Int'
+        'TotalWickets' => 'Int',
+
+        'SortOrder' => 'Int'
     ];
 
     private static $has_one = [
@@ -121,6 +125,12 @@ class Innings extends DataObject
 
         $totalWicketsField = new NumericField('TotalWickets', 'Total Wickets');
         $fields->addFieldToTab('Root.Main', $totalWicketsField);
+
+        $totalOversField = new NumericField('TotalOvers', 'Total Overs');
+        $fields->addFieldToTab('Root.Main', $totalOversField);
+
+        $totalBallsField = new NumericField('TotalBalls', 'Total Balls in Last Over');
+        $fields->addFieldToTab('Root.Main', $totalBallsField);
 
         $battingSummaryField = new TextareaField('BattingSummary', 'Batting Summary');
         $fields->addFieldToTab('Root.Main', $battingSummaryField);
