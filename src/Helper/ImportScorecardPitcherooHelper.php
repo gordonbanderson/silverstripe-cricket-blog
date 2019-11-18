@@ -70,7 +70,8 @@ class ImportScorecardPitcherooHelper
         $teamBatting = $this->getTeamBatting($inningsScorecardHTML);
 
         //$this->beingParsingCard($inningsScorecardHTML);
-        $this->parseFallOfWickets($inningsScorecardHTML);
+        // $this->parseFallOfWickets($inningsScorecardHTML);
+        $this->parseBowlingCard($inningsScorecardHTML);
 
 
         //error_log('Batting: ' . $teamBatting);
@@ -81,6 +82,32 @@ class ImportScorecardPitcherooHelper
          * error_log($level1Divs[2]); << this has the toss winner
          */
 
+
+    }
+
+
+    private function parseBowlingCard($inningsScorecardHTML)
+    {
+        $level1Divs = $inningsScorecardHTML->find('div');
+        $level3Divs = $level1Divs[3];
+        $level2Divs = $level3Divs->find('div');
+        $bowlingCard = $level2Divs[3];
+        $entries = $bowlingCard->find('div');
+        for ($i=1; $i<sizeof($bowlingCard); $i++) {
+            $entry = $entries[$i];
+            $entryDivs = $entry->find('div')[0]->find('div');
+
+
+            //$this->exploreNodeset($entryDivs->find('div')[1]->innerHtml);
+
+            $bowler = $entryDivs->find('div')[1]->find('div')[0]->innerHtml;
+            $overs = $entryDivs[1]->innerHtml;
+            $maidens = $entryDivs[2]->innerHtml;
+            $runs = $entryDivs[3]->innerHtml;
+            $wickets = $entryDivs[4]->innerHtml;
+
+            error_log("{$bowler}    O{$overs} M{$maidens} R{$runs} W{$wickets}");
+        }
 
     }
 
