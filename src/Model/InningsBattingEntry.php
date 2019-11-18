@@ -154,4 +154,23 @@ class InningsBattingEntry extends DataObject
         return $result;
     }
 
+    public function getHowOutPart1()
+    {
+        $result = '';
+        if ($this->HowOut()->Player1Needed) {
+            $result = $this->HowOut()->ShortTitle;
+        }
+        return $result;
+    }
+
+    public function getHowOutPart2()
+    {
+        $result = $this->HowOut()->ShortTitle;
+        if ($this->HowOut()->Player1Needed) {
+            $result = 'b';
+        }
+
+        return $result;
+    }
+
 }
