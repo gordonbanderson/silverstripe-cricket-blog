@@ -111,12 +111,10 @@ class ImportScorecardPitcherooHelper
         $level1Divs = $inningsScorecardHTML->find('div');
         //$battingCard = $level1Divs[3];
         $battingCard = $level1Divs[2+$this->innings];
-        $this->exploreNodeset($battingCard);
 
         $level2Divs = $battingCard->find('div');
         $this->parseBattingCard($level2Divs[1]);
         error_log('+++++++');
-        $this->exploreNodeset($level2Divs[1]);
     }
 
     public function parseFallOfWickets($inningsScorecardHTML)
@@ -153,8 +151,6 @@ class ImportScorecardPitcherooHelper
             $level3Divs = $batsmanNodeset->find('div');
             $level4Divs = $level3Divs->find('div');
 
-            $this->exploreNodeset($level3Divs);
-
             // $level4Divs[0] contains the avatar, batsman name and method of dismissal
             $avatarBlock = $level4Divs[0]->find('div')[1];
             if (is_null($avatarBlock)) {
@@ -188,27 +184,64 @@ class ImportScorecardPitcherooHelper
         // this contains 'Extras' with the breakdown as [0], [1] is the total of extras
         $extrasDiv = $batsmanDivs[$i]->find('div')[0];
 
-        $extrasBreakdown = $extrasDiv->find('div')[0]->find('span')[0]->innerHtml;
+        $extrasBreakdownText = $extrasDiv->find('div')[0]->find('span')[0]->innerHtml;
+
+        $extrasArray = $this->getExtrasBreakdown($extrasBreakdownText);
 
         $totalExtras = $extrasDiv->find('div')[1]->innerHtml;
         error_log('EXTRAS: ' . $totalExtras);
-        error_log('EXTRAS: ' . $extrasBreakdown);
+
+        $sheet->setCellValue('F17', $extrasArray['b']);
+        $sheet->setCellValue('F18', $extrasArray['lb']);
+        $sheet->setCellValue('F19', $extrasArray['nb']);
+        $sheet->setCellValue('F20', $extrasArray['w']);
+        $sheet->setCellValue('F21', $extrasArray['pr']);
+
 
         $totalsDiv = $batsmanDivs[$i+1]->find('div')[0];
         error_log('----------------------------------');
-        error_log('TOTALS META: ' . $totalsDiv->find('span')[0]->innerHtml);
-        error_log('TOTAL: ' . $totalsDiv->find('div')[1]->innerHtml);
+
+        // this is likes of "(For 8 wickets, 50 overs)"
+        $totalsMeta =  $totalsDiv->find('span')[0]->innerHtml;
+        $splits = explode(' ', $totalsMeta);
+
+        $sheet->setCellValue('F23', $totalsDiv->find('div')[1]->innerHtml);
+        $sheet->setCellValue('F24', $splits[1]);
+        $sheet->setCellValue('F25', $splits[3]);
+    }
+
+
+    private function getExtrasBreakdown($extrasBreakdown)
+    {
+        error_log('INPUT: ' . $extrasBreakdown);
+
+        $result = [
+          'b' => 0,
+            'lb' => 0,
+            'nb' => 0,
+            'w' => 0,
+            'pr' => 0
+        ];
+        $extrasBreakdown = ltrim($extrasBreakdown, '(');
+        $extrasBreakdown = rtrim($extrasBreakdown, ')');
+
+        $splits = explode(',', $extrasBreakdown);
+        foreach($splits as $extrasDetails) {
+            error_log('ED: ' . $extrasDetails);
+            $rowSplit = preg_split('/(\d+)/', $extrasDetails, -1, PREG_SPLIT_DELIM_CAPTURE);
+            error_log(print_r($rowSplit,1));
+            $result[$rowSplit[2]] = $rowSplit[1];
+        }
+
+        return $result;
+
     }
 
     private function getTeamBatting($inningsScorecardHTML)
     {
         $level1Divs = $inningsScorecardHTML->find('div');
-
         $card = $level1Divs[2+$this->innings];
-        //$this->exploreNodeset($fow);
-        //die;
         return $card->find('h3')[0]->innerHtml();
-        error_log($h3->innerHtml);
     }
 
     private function exploreNodeset($nodes)
@@ -220,7 +253,6 @@ class ImportScorecardPitcherooHelper
             $i++;
             error_log("\n\n\n\n\n\n\n\n\n");
         }
-
     }
 
     /**
