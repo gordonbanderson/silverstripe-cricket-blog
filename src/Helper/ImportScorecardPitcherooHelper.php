@@ -19,8 +19,8 @@ class ImportScorecardPitcherooHelper
     public function importScorecardFromURL($url)
     {
         $this->spreadsheet = new Spreadsheet();
-        $this->initialiseSpreadsheet($this->spreadsheet);
-        $this->parsePitcheroo($this->spreadsheet, $url);
+        $this->initialiseSpreadsheet();
+        $this->parsePitcheroo( $url);
 
         $writer = new Xlsx($this->spreadsheet);
         $writer->save('test.xls');
@@ -30,8 +30,8 @@ class ImportScorecardPitcherooHelper
     private function parsePitcheroo( $url)
     {
         $dom = new Dom();
-        //$dom->loadFromUrl($url);
-        $dom->loadFromFile('./pitcheroo.html',[
+
+        $dom->loadFromFile('./pitcheroo.html', [
             'removeStyles' => true,
             'cleanupInput' => false,
             'preserveLineBreaks' => true
@@ -85,7 +85,6 @@ class ImportScorecardPitcherooHelper
 
             error_log("{$bowler}    O{$overs} M{$maidens} R{$runs} W{$wickets}");
         }
-
     }
 
 
@@ -143,8 +142,26 @@ class ImportScorecardPitcherooHelper
 
             $batsmanName = $batsmanNameDiv->innerHtml;
             error_log('BATSMAN:' . $batsmanName);
-            $dismissal = $avatarBlock->find('span')[0]->innerHtml;
-            error_log('DISMISSAL: ' . $dismissal);
+            $dismissalDesc = $avatarBlock->find('span')[0]->innerHtml;
+            error_log('DISMISSAL: ' . $dismissalDesc);
+
+            $splits = explode(',', $dismissalDesc);
+            $dismissal = ['','','',''];
+            if (sizeof($splits) == 1) {
+                $info = $this->normalizeDismissal($splits[0]);
+                $dismissal[2] = $info['method'];
+                $dismissal[3] = $info['fielder'];
+            } else {
+                // this is cases like c. Fred Smith,  b. Simon Jones
+                $info0 = $this->normalizeDismissal($splits[0]);
+                $info1 = $this->normalizeDismissal($splits[1]);
+                $dismissal[0] = $info0['method'];
+                $dismissal[1] = $info0['fielder'];
+                $dismissal[2] = $info1['method'];
+                $dismissal[3] = $info1['fielder'];
+            }
+
+
 
             $runs = $level4Divs[1]->innerHtml;
             $balls = $level4Divs[2]->innerHtml;
@@ -157,6 +174,10 @@ class ImportScorecardPitcherooHelper
             error_log('----');
             $row = $i+3;
             $sheet->setCellValue('A' . $row, $batsmanName);
+            $sheet->setCellValue('B' . $row, $dismissal[0]);
+            $sheet->setCellValue('C' . $row, $dismissal[1]);
+            $sheet->setCellValue('D' . $row, $dismissal[2]);
+            $sheet->setCellValue('E' . $row, $dismissal[3]);
             $sheet->setCellValue('F' . $row, $runs);
             $sheet->setCellValue('G' . $row, $balls);
             $sheet->setCellValue('H' . $row, $fours);
@@ -191,6 +212,64 @@ class ImportScorecardPitcherooHelper
         $sheet->setCellValue('F23', $totalsDiv->find('div')[1]->innerHtml);
         $sheet->setCellValue('F24', $splits[1]);
         $sheet->setCellValue('F25', $splits[3]);
+    }
+
+    private function normalizeDismissal($dismissalPortion)
+    {
+        error_log('METHOD: ' . $dismissalPortion);
+        /*
+         *  b
+ c
+ st
+ c&b
+ lbw
+ retired
+ retired hurt
+ hit the ball twice
+ hit wicket
+ did not bat
+ obstructing the field
+ timed out
+ not out
+
+         */
+        $normalized = [
+            'b.' => 'b',
+            'ct.' => 'c',
+            'st.' => 'st',
+          'lb.' => 'lbw',
+          'Not Out' => 'not out'
+        ];
+
+        $keys = array_keys($normalized);
+        $result = 'UNKNOWN';
+        $fielder = '';
+
+        error_log("\tT1 Checking for existence of {$dismissalPortion}");
+
+        if (in_array($dismissalPortion, $keys)) {
+            $result = $normalized[$dismissalPortion];
+        }
+
+        if ($result == 'UNKNOWN') {
+            $splits = explode(' ', trim($dismissalPortion));
+            error_log(print_r($splits, 1));
+            error_log("\tT2 Checking for existence of *{$splits[0]}*");
+
+            if (in_array($splits[0], $keys)) {
+                if (isset($normalized[$splits[0]])) {
+                    $result = $normalized[$splits[0]];
+                }
+
+                array_shift($splits);
+                $fielder = implode(' ', $splits);
+            }
+        }
+
+        return [
+            'method' => $result,
+            'fielder' => $fielder
+        ];
     }
 
 
