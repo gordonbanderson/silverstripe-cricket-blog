@@ -69,7 +69,8 @@ class ImportScorecardPitcherooHelper
 
         $teamBatting = $this->getTeamBatting($inningsScorecardHTML);
 
-        $this->beingParsingCard($inningsScorecardHTML);
+        //$this->beingParsingCard($inningsScorecardHTML);
+        $this->parseFallOfWickets($inningsScorecardHTML);
 
 
         //error_log('Batting: ' . $teamBatting);
@@ -92,7 +93,24 @@ class ImportScorecardPitcherooHelper
         $this->parseBattingCard($level2Divs[1]);
         error_log('+++++++');
         $this->exploreNodeset($level2Divs[1]);
-        die;
+    }
+
+    public function parseFallOfWickets($inningsScorecardHTML)
+    {
+        $level1Divs = $inningsScorecardHTML->find('div');
+        $fow = $level1Divs[3];
+        $level2Divs = $fow->find('div');
+
+        $fowRows = $level2Divs[2]->find('div');
+        for($i=1; $i<sizeof($fowRows);$i++) {
+            $singleFowNode = $fowRows[$i];
+            $subDivs = $singleFowNode->find('div');
+            $fowScore = $subDivs[0]->innerHtml;
+            $batsman = $subDivs[1]->innerHtml;
+            error_log($batsman . ' - ' . $fowScore);
+           // $this->exploreNodeset($singleFowNode);
+
+        }
     }
 
     /**
@@ -147,7 +165,6 @@ class ImportScorecardPitcherooHelper
         error_log('----------------------------------');
         error_log('TOTALS META: ' . $totalsDiv->find('span')[0]->innerHtml);
         error_log('TOTAL: ' . $totalsDiv->find('div')[1]->innerHtml);
-        die;
     }
 
     private function getTeamBatting($inningsScorecardHTML)
