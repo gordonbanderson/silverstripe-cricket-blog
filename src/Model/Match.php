@@ -31,6 +31,7 @@ class Match extends DataObject
     private static $has_one = [
       'HomeTeam' => Team::class,
       'AwayTeam' => Team::class,
+        'TossWonBy' => Team::class,
         'Competition' => Competition::class,
         'Ground' => Ground::class
     ];
@@ -141,12 +142,18 @@ class Match extends DataObject
             $this->Result
         ));
 
+        $inningsOfTheMatchCfg = GridFieldConfig_RecordEditor::create();
+        $inningsOfTheMatchCfg->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
+
         $fields->addFieldToTab('Root.Innings', GridField::create(
             'Innings',
             'Innings of the match',
             $this->Innings(),
-            GridFieldConfig_RecordEditor::create()
+            $inningsOfTheMatchCfg
         ));
+
+
+
 
         return $fields;
     }
