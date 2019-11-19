@@ -31,7 +31,7 @@ class ImportScorecardPitcherooHelper
     {
         $dom = new Dom();
 
-        $dom->loadFromFile('./pitcheroo.html', [
+        $dom->loadFromUrl($url, [
             'removeStyles' => true,
             'cleanupInput' => false,
             'preserveLineBreaks' => true
@@ -110,7 +110,8 @@ class ImportScorecardPitcherooHelper
         for($i=1; $i<sizeof($fowRows);$i++) {
             $singleFowNode = $fowRows[$i];
             $subDivs = $singleFowNode->find('div');
-            $fowScore = $subDivs[0]->innerHtml;
+            $fowScoreAndWickets = $subDivs[0]->innerHtml;
+            $fowScore = explode('-', $fowScoreAndWickets)[0];
             $batsman = $subDivs[1]->innerHtml;
             error_log($batsman . ' - ' . $fowScore);
             $row = $i+29;
@@ -265,6 +266,15 @@ class ImportScorecardPitcherooHelper
                 $fielder = implode(' ', $splits);
             }
         }
+
+        // @todo make this configurable
+        $fielder = str_replace('W Lubbe', 'Wihan Lubbe', $fielder);
+        $fielder = str_replace('M Petrie', 'Marc Petrie', $fielder);
+        $fielder = str_replace('S Christie', 'Shaun Christie', $fielder);
+        $fielder = str_replace('D Salmond', 'Daniel Salmond', $fielder);
+        $fielder = str_replace('C Ramsay', 'Craig Ramsay', $fielder);
+        $fielder = str_replace('E Small', 'Euan Small', $fielder);
+        $fielder = str_replace('F Snyman', 'Frederik Snyman', $fielder);
 
         return [
             'method' => $result,
