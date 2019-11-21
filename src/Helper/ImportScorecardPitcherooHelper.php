@@ -173,6 +173,7 @@ class ImportScorecardPitcherooHelper
             error_log('FOURS: ' . $fours);
             error_log('SIXES: ' . $sixes);
             error_log('----');
+            error_log(print_r($dismissal, 1));
             $row = $i+3;
             $sheet->setCellValue('A' . $row, $batsmanName);
             $sheet->setCellValue('B' . $row, $dismissal[0]);
@@ -237,9 +238,13 @@ class ImportScorecardPitcherooHelper
         $normalized = [
             'b.' => 'b',
             'ct.' => 'c',
+            'Caught.' => 'c',
             'st.' => 'st',
           'lb.' => 'lbw',
-          'Not Out' => 'not out'
+            'Not Out' => 'not out',
+            'ro.' => 'run out',
+            'Run Out' => 'run out',
+
         ];
 
         $keys = array_keys($normalized);
@@ -272,9 +277,45 @@ class ImportScorecardPitcherooHelper
         $fielder = str_replace('M Petrie', 'Marc Petrie', $fielder);
         $fielder = str_replace('S Christie', 'Shaun Christie', $fielder);
         $fielder = str_replace('D Salmond', 'Daniel Salmond', $fielder);
+        $fielder = str_replace('J Plomer', 'Jack Plomer', $fielder);
+        $fielder = str_replace('B Plomer', 'Ben Plomer', $fielder);
+        $fielder = str_replace('R Plomer', 'Ryan Plomer', $fielder);
+        $fielder = str_replace('D Sinclair', 'Daryl Sinclair', $fielder);
         $fielder = str_replace('C Ramsay', 'Craig Ramsay', $fielder);
+        $fielder = str_replace('C Cameron', 'Craig Cameron', $fielder);
+        $fielder = str_replace('R Cameron', 'Ryan Cameron', $fielder);
         $fielder = str_replace('E Small', 'Euan Small', $fielder);
         $fielder = str_replace('F Snyman', 'Frederik Snyman', $fielder);
+        $fielder = str_replace('G Peal', 'Greig Peal', $fielder);
+        $fielder = str_replace('M Parker', 'Matthew Parker', $fielder);
+        $fielder = str_replace('H Laing', 'Hayden Laing', $fielder);
+        $fielder = str_replace('A Brewer', 'Adam Brewer', $fielder);
+        $fielder = str_replace('C Robb', 'Chris Robb', $fielder);
+        $fielder = str_replace('C Burnett', 'Calvin Burnett', $fielder);
+        $fielder = str_replace('C Ross', 'Craig Ross', $fielder);
+        $fielder = str_replace('J Burnett', 'Jon Burnett', $fielder);
+        $fielder = str_replace('A Hogg', 'Abbie Hogg', $fielder);
+        $fielder = str_replace('M Clark', 'Murray Clark', $fielder);
+        $fielder = str_replace('M Salmond', 'Matthew Salmond', $fielder);
+        $fielder = str_replace('J Salmond', 'John Salmond', $fielder);
+        $fielder = str_replace('L Paterson', 'Lee Paterson', $fielder);
+        $fielder = str_replace('R Paterson', 'Ross Paterson', $fielder);
+        $fielder = str_replace('A Davidson', 'Alex Davidson', $fielder);
+        $fielder = str_replace('M Robb', 'Murray Robb', $fielder);
+        $fielder = str_replace('K Stott', 'Kevin Stott', $fielder);
+        $fielder = str_replace('M McColl', 'Megan McColl', $fielder);
+        $fielder = str_replace('B Carnegie', 'Bryce Carnegie', $fielder);
+        $fielder = str_replace('D Bridges', 'Dave Bridges', $fielder);
+        $fielder = str_replace('J Russell', 'Jamie Russell', $fielder);
+        $fielder = str_replace('P Stewart', 'Paul Stewart', $fielder);
+        $fielder = str_replace('C Tait', 'Conor Tait', $fielder);
+        $fielder = str_replace('L Lawrence', 'Logan Lawrence', $fielder);
+        $fielder = str_replace('Z Rennie', 'Zoe Rennie', $fielder);
+        $fielder = str_replace('R Duthie', 'Rhys Duthie', $fielder);
+        $fielder = str_replace('R Banks-Hawley', 'Rohan Banks-Hawley', $fielder);
+        $fielder = str_replace('S Hawley', 'Simon Hawley', $fielder);
+        $fielder = str_replace('B O&#x27;Mara', "Ben O'Mara", $fielder);
+
 
         return [
             'method' => $result,
