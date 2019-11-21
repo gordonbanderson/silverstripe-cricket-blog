@@ -253,6 +253,10 @@ class ImportScorecardHelper
         $teamBatting = null;
         $teamBowling = null;
         $homeTeamBatting = true;
+
+        error_log('SLUG:    *' . $slug . '*');
+        error_log('HC SLUG: *' . $this->homeClub->Slug . '*');
+        error_log('AC SLUG: ' . $this->awayClub->Slug);
         switch ($slug) {
             case $this->homeClub->Slug:
                 $teamBatting = $this->homeTeam;
@@ -265,6 +269,7 @@ class ImportScorecardHelper
                 break;
             default:
                 user_error('The team batting could not be determined from the value ' . $battingClubName);
+                die;
                 break;
         }
 
@@ -345,6 +350,13 @@ class ImportScorecardHelper
         for ($i = 4; $i <= 14; $i++) {
             $playerName = $sheet->getCell('A' . $i)->getCalculatedValue();
             error_log($playerName);
+
+
+            if (empty($playerName)) {
+                error_log('Batsmen exhausted');
+                break;
+            }
+
             $batsman = $this->createOrGetPlayer($teamBatting, $playerName);
 
             if ($homeTeamBatting) {
@@ -357,7 +369,7 @@ class ImportScorecardHelper
             $howOut1 = HowOut::get()->filter(['ShortTitle' => $howoutShortTitle1])->first();
             $fielder1Name = $sheet->getCell('C' . $i);
             $fielder1 = null;
-            error_log('T1 fielder 1 name = *' . $fielder1Name . '*');
+            error_log('F1 fielder 1 name = *' . $fielder1Name . '*');
             if (strlen($fielder1Name) > 0) {
                 error_log('NOT EMPTY!!!!');
                 $fielder1 = $this->createOrGetPlayer($teamBowling, $fielder1Name);
@@ -371,6 +383,8 @@ class ImportScorecardHelper
             $howoutShortTitle2 = $sheet->getCell('D' . $i);
             $howOut2 = HowOut::get()->filter(['ShortTitle' => $howoutShortTitle2])->first();
             $fielder2Name = $sheet->getCell('E' . $i);
+            error_log('F2 fielder 1 name = *' . $fielder1Name . '*');
+
             $fielder2 = null;
             if (strlen($fielder2Name) > 0) {
                 $fielder2 = $this->createOrGetPlayer($teamBowling, $fielder2Name);
