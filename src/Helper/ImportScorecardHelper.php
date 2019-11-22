@@ -142,7 +142,7 @@ class ImportScorecardHelper
         $params['DisplayName'] = $splits[0];
         if (sizeof($splits) > 1) {
             $params['Surname'] = $splits[1];
-            $params['DisplayName'] = $splits[0] . ' ' . $splits[1];
+            $params['DisplayName'] = implode(' ', $splits);
         }
 
         $player = $this->createOrGetBySlug(Player::class, $fieldValue, 'DisplayName', $params);
