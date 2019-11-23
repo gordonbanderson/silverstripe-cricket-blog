@@ -196,9 +196,9 @@ class ImportScorecardHelper
     {
         $match = new Match();
 
-        $firstInnings = $this->parseInnings($spreadsheet->getSheet(1));
+        $firstInnings = $this->parseInnings($spreadsheet->getSheet(1), 1);
         $match->Innings()->add($firstInnings);
-        $secondInnings = $this->parseInnings($spreadsheet->getSheet(2));
+        $secondInnings = $this->parseInnings($spreadsheet->getSheet(2), 2);
         $match->Innings()->add($secondInnings);
     }
 
@@ -206,9 +206,10 @@ class ImportScorecardHelper
      * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $spreadsheet
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function parseInnings(Worksheet $sheet)
+    public function parseInnings(Worksheet $sheet, $order)
     {
         $innings = new Innings();
+        $innings->SortOrder = $order;
 
         $innings->Byes = $sheet->getCell('F17')->getCalculatedValue();
         $innings->LegByes = $sheet->getCell('F18')->getCalculatedValue();
@@ -313,6 +314,7 @@ class ImportScorecardHelper
                 $bowlingEntry->NoBalls = $noballs;
                 $bowlingEntry->Fours = $fours;
                 $bowlingEntry->Sixes = $sixes;
+                $bowlingEntry->SortOrder = $i-43;
                 $bowlingEntry->write();
             }
         }
@@ -396,6 +398,7 @@ class ImportScorecardHelper
             }
             error_log($fielder2Name);
             $inningsEntry = new InningsBattingEntry();
+            $inningsEntry->SortOrder = $i-3;
             $inningsEntry->Batsman = $batsman;
             $inningsEntry->FieldingPlayer1 = $fielder1;
             $inningsEntry->FieldingPlayer2 = $fielder2;
