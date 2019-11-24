@@ -17,6 +17,12 @@ Suilven\CricketSite\Model\Team:
     - Suilven\Sluggable\Extension\Sluggable
   slug: Name
 
+
+Suilven\CricketSite\Model\Player:
+  extensions:
+    - Suilven\Sluggable\Extension\Sluggable
+  slug: DisplayName
+
 Suilven\CricketSite\Model\Ground:
   extensions:
     - Suilven\Sluggable\Extension\Sluggable
