@@ -14,6 +14,7 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextareaField;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\View\HTML;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
@@ -99,6 +100,11 @@ class Match extends DataObject
         map('ID', 'Title')) ->setEmptyString('-- Select home team --');
         $fields->addFieldToTab('Root.Main', $homeTeamField);
 
+        $teamsPlaying = new ArrayList([$this->HomeTeam(), $this->AwayTeam()]);
+        $tossWonByField = DropdownField::create('TossWonByID', 'Toss Won By', $teamsPlaying->
+        sort('Name')->
+        map('ID', 'Title')) ->setEmptyString('-- Select toss won by --');
+        $fields->addFieldToTab('Root.Main', $tossWonByField);
 
         if ($this->HomeTeamID) {
             $confHome = GridFieldConfig_RelationEditor::create(20);
