@@ -100,11 +100,6 @@ class Match extends DataObject
         map('ID', 'Title')) ->setEmptyString('-- Select home team --');
         $fields->addFieldToTab('Root.Main', $homeTeamField);
 
-        $teamsPlaying = new ArrayList([$this->HomeTeam(), $this->AwayTeam()]);
-        $tossWonByField = DropdownField::create('TossWonByID', 'Toss Won By', $teamsPlaying->
-        sort('Name')->
-        map('ID', 'Title')) ->setEmptyString('-- Select toss won by --');
-        $fields->addFieldToTab('Root.Main', $tossWonByField);
 
         if ($this->HomeTeamID) {
             $confHome = GridFieldConfig_RelationEditor::create(20);
@@ -147,6 +142,13 @@ class Match extends DataObject
 
             $fields->addFieldToTab('Root.AwayTeam', $teamGridAway);
         }
+
+        $teamsPlaying = new ArrayList([$this->HomeTeam(), $this->AwayTeam()]);
+        $tossWonByField = DropdownField::create('TossWonByID', 'Toss Won By', $teamsPlaying->
+        sort('Name')->
+        map('ID', 'Title')) ->setEmptyString('-- Select toss won by --');
+        $fields->addFieldToTab('Root.Main', $tossWonByField);
+
 
         $fields->addFieldToTab('Root.Main', TextareaField::create(
             'Result',
