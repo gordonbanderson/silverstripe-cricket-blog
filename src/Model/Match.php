@@ -26,7 +26,7 @@ class Match extends DataObject
     private static $db = [
         'Result' => 'Text',
         'When' => 'Datetime',
-        'Status' => "Enum('Fixture,Live,Result','Fixture')",
+        'Status' => "Enum('Fixture,Live,Result,Cancelled,Abandoned','Fixture')",
         'Description' => 'Varchar(255)'
     ];
 
