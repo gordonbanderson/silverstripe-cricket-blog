@@ -11,7 +11,8 @@ class Competition extends DataObject
 
     private static $db = [
         'Name' => 'Varchar(255)',
-        'CompetitionType' => "Enum('League,Cup', 'League')"
+        'CompetitionType' => "Enum('League,Cup', 'League')",
+        'SortOrder' => 'Int'
     ];
 
     private static $has_many = [
