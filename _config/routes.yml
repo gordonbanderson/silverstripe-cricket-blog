@@ -10,3 +10,4 @@ SilverStripe\Control\Director:
     # e.g. /players/show/john-smith ignored the /show/ part and thought the action was john-smith, resulting in
     # 404 not found
     'players//': 'Suilven\CricketSite\Controller\PlayersController'
+    'stats//': 'Suilven\CricketSite\Controller\StatisticsController'
