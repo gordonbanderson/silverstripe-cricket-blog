@@ -35,6 +35,17 @@ class HowOut extends DataObject
         InningsBattingEntry::class
     ];
 
+    public function isNotOut()
+    {
+
+        return in_array($this->ShortTitle, ['not out', 'retired hurt']);
+    }
+
+    public function getNotOut()
+    {
+        return $this->isNotOut();
+    }
+
     public function requireDefaultRecords()
     {
         parent::requireDefaultRecords();
@@ -133,6 +144,8 @@ class HowOut extends DataObject
 
 
     }
+
+
 
 
 }
