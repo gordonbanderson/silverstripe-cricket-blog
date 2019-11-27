@@ -45,6 +45,15 @@ class InningsBowlingEntry extends DataObject
         'Wickets' => 'Wickets',
     ];
 
+    public function getDescription()
+    {
+        $result = 'O ' . $this->Overs . '.' . $this->Balls;
+        $result .= ' M ' . $this->Maidens;
+        $result .= ' R ' . $this->Runs;
+        $result .= ' W ' . $this->Wickets;
+        return $result;
+    }
+
     /**
      * This is shown as the summary of a complex object being edited in the CMS
      *
