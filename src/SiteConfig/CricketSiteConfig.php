@@ -4,11 +4,16 @@ namespace Suilven\CricketSite\SiteConfig;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
 use SilverStripe\Core\Extension;
+use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
+use Suilven\CricketSite\Model\Club;
+use Suilven\CricketSite\Model\Team;
 
 class CricketSiteConfig extends Extension {
     private static $has_one = [
-      'EmptyPlayerImage' => Image::class
+      'EmptyPlayerImage' => Image::class,
+        'ClubSiteIsFor' => Club::class
     ];
 
     public function updateCMSFields(FieldList $fields) {
@@ -16,5 +21,11 @@ class CricketSiteConfig extends Extension {
         $photoField->setFolderName('player-profile-images-empty');
         $photoField->setAllowedExtensions(['png', 'jpg', 'jpeg']);
         $fields->addFieldToTab('Root.Cricket', $photoField);
+
+        $fields->addFieldToTab('Root.Cricket', DropdownField::create(
+            'ClubSiteIsForID',
+            'CLub for this website',
+            Club::get()->map('ID','Name')
+        )->setEmptyString('-- Please select club --'));
     }
 }
