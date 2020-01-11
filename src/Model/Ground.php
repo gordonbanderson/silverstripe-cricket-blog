@@ -9,6 +9,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\View\HTML;
 use Smindel\GIS\Forms\MapField;
+use Smindel\GIS\GIS;
 
 class Ground extends DataObject
 {
@@ -42,7 +43,7 @@ class Ground extends DataObject
             'Root.Main',
             MapField::create('Location')
                 ->setControl('polyline', false)
-                ->setControl('polygon', true)
+                ->setControl('polygon', false)
                 ->enableMulti(true),
             'Content'
         );
@@ -53,6 +54,13 @@ class Ground extends DataObject
     public function getTitle()
     {
         return $this->Name;
+    }
+
+    public function getCoordinatesAsJSON()
+    {
+        $location = $this->Location;
+        $coordinates = GIS::create($location)->coordinates;
+        return json_encode($coordinates);
     }
 
 }

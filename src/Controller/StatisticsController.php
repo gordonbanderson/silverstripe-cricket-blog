@@ -4,6 +4,7 @@ namespace Suilven\CricketSite\Controller;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\SiteConfig\SiteConfig;
+use Suilven\CricketSite\Model\Competition;
 use Suilven\CricketSite\Model\InningsBattingEntry;
 use Suilven\CricketSite\Model\InningsBowlingEntry;
 use Suilven\CricketSite\Model\Player;
@@ -22,10 +23,14 @@ class StatisticsController extends \PageController
         $club = $config->ClubSiteIsFor();
         $players = $club->Players()->sort('Surname,FirstName');
 
+        // @todo season filter
+        $competitions = Competition::get()->sort('SortOrder');
+
         return [
-            'Title' => 'Stats',
+            'Title' => 'Statistics',
             'Players' => $players,
-            'Club' => 'Club'
+            'Club' => $club,
+            'Competitions' => $competitions
         ];
     }
 
@@ -51,12 +56,24 @@ class StatisticsController extends \PageController
     {
         $player = $this->getPlayerFromSlug($request);
 
+        $params = $this->getURLParams();
+        $competition = null;
+        if (isset($params['OtherID'])) {
+            $competition = $params['OtherID'];
+            $competition = Competition::get()->filter(['Slug' => $competition])->first();
+        }
+
 
         // sort the batting entries into time order by joining via innings and then match to get the When field
         $innings = InningsBattingEntry::get()->filter(['BatsmanID' => $player->ID])
             ->innerJoin('CricketInnings', '"CricketInningsBattingEntry"."InningsID" = "CricketInnings"."ID"')
-            ->innerJoin('CricketMatch', '"CricketInnings"."MatchID" = "CricketMatch"."ID"')
-            ->sort('When');
+            ->innerJoin('CricketMatch', '"CricketInnings"."MatchID" = "CricketMatch"."ID"');
+
+        if (!empty($competition)) {
+           // $inning = $innings->innerJoin('CricketCompetition', '"CricketMatch"."CompetitionID" = ' . $competition->ID);
+        }
+
+        $innings->sort('When');
 
         $labels = [];
         $runs = [];

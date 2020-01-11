@@ -5,9 +5,12 @@ use SilverStripe\Core\Extension;
 
 class SonyRX10M4 extends Extension {
     public function augmentPhotographWithExif($flickrPhoto, $exifs) {
-        $exif = $exifs['DigitalZoomRatio'];
-        $zoomRatio = $exifs['DigitalZoomRatio']->Raw;
-        $flickrPhoto->DigitalZoomRatio = $zoomRatio;
-        $focalLength = ($flickrPhoto->FocalLength35mm) * (float) $zoomRatio;
+        if (isset($exifs['DigitalZoomRatio'])) {
+            $exif = $exifs['DigitalZoomRatio'];
+            $zoomRatio = $exifs['DigitalZoomRatio']->Raw;
+            $flickrPhoto->DigitalZoomRatio = $zoomRatio;
+            $focalLength = ($flickrPhoto->FocalLength35mm) * (float) $zoomRatio;
+        }
+
     }
 }

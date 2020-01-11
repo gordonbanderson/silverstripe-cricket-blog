@@ -11,3 +11,4 @@ SilverStripe\Control\Director:
     # 404 not found
     'players//': 'Suilven\CricketSite\Controller\PlayersController'
     'stats//': 'Suilven\CricketSite\Controller\StatisticsController'
+    'grounds//': 'Suilven\CricketSite\Controller\GroundsController'

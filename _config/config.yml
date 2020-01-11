@@ -18,4 +18,8 @@ SilverStripe\SiteConfig\SiteConfig:
   extensions:
     - Suilven\CricketSite\SiteConfig\CricketSiteConfig
 
+#SilverStripe\CMS\Model\SiteTree: << gets picked up but fails on the customise method
+SilverStripe\Control\Controller:
+  extensions:
+    - Suilven\CricketSite\Extensions\GroundWeatherExtension
 
