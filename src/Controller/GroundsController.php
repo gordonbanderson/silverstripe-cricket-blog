@@ -51,15 +51,15 @@ class GroundsController extends \PageController
         }
 
 
+        // prepare data for Chart JS
         $rainChartData = [];
         $speedChartData = [];
         $temperatureChartData = [];
         $labels = [];
-        $feelsLikeTemperatureData = [];
-        $currentTemperatureData = [];
         $rainProbabilityData = [];
         $rainIntensityData = [];
-        $data = [];
+        $windSpeeds = [];
+        $windAngles = [];
 
 
         $hourlyForecast = new ArrayList();
@@ -70,10 +70,8 @@ class GroundsController extends \PageController
 
             $parsed = Carbon::parse($record->When);
             $labels[] = $parsed->format('H:i');
-            $data[] = $record->WindSpeed;
-
-            $feelsLikeTemperatureData[] = $record->FeelsLikeTemperature;
-            $currentTemperatureData[] = $record->CurrentTemperature;
+            $windSpeeds[] = $record->WindSpeed;
+            $windAngles[] = $record->WindBearing-90; // 0 in CSS is to the right, 0 in geo terms is up, aka north
 
             $rainProbabilityData[] = 100 * $record->PrecipitationProbablity;
             $rainIntensityData[] = 100 * $record->PrecipitationIntensity;
@@ -83,10 +81,17 @@ class GroundsController extends \PageController
         $speedChartData['labelString'] = 'Runs NOT';
         $speedChartData['datasets'] = [
             [
-                'label' => 'Wind Speed',
-                'data' => $data,
+                'label' => 'Wind Speed and Direction',
+                'data' => $windSpeeds,
+                'angles' => $windAngles,
                 'backgroundColor' => '#00B',
                 'fill' => false
+            ]
+        ];
+        $speedChartData['options'] = [
+            'title' => [
+                'display' => true,
+                'text' => 'Wind Speed (m/s)'
             ]
         ];
 
@@ -112,30 +117,6 @@ class GroundsController extends \PageController
             [WindBearing] => 236
          */
 
-        $temperatureChartData['labels'] = $labels;
-        $temperatureChartData['labelString'] = 'Runs NOT 2';
-        $temperatureChartData['options'] = [
-            'title' => [
-                'display' => true,
-                'text' => 'Temperature'
-            ]
-        ];
-        $temperatureChartData['datasets'] = [
-            [
-                'label' => 'Feels Like (C)',
-                'data' => $feelsLikeTemperatureData,
-                'backgroundColor' => '#00F',
-                'fill' => false
-            ],
-            [
-                'label' => 'Actual (C)',
-                'data' => $currentTemperatureData,
-                'backgroundColor' => 'orange',
-                'fill' => false
-            ]
-        ];
-
-
         $rainChartData['labels'] = $labels;
         $rainChartData['labelString'] = 'Runs NOT';
         $rainChartData['datasets'] = [
@@ -150,6 +131,13 @@ class GroundsController extends \PageController
                 'data' => $rainIntensityData,
                 'backgroundColor' => 'maroon',
                 'fill' => false
+            ]
+        ];
+
+        $rainChartData['options'] = [
+            'title' => [
+                'display' => true,
+                'text' => 'Rain Probability and Intensity'
             ]
         ];
 
