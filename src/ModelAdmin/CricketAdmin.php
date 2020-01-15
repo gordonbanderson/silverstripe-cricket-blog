@@ -4,8 +4,8 @@ class CricketAdmin extends \SilverStripe\Admin\ModelAdmin
 {
     private static $managed_models = [
         \Suilven\CricketSite\Model\Club::class,
-        \Suilven\CricketSite\Model\Competition::class,
-        \Suilven\CricketSite\Model\Ground::class
+        \Suilven\CricketSite\Model\Ground::class,
+        \Suilven\CricketSite\Model\Season::class,
     ];
 
     private static $url_segment = 'cricket';

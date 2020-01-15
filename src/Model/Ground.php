@@ -3,6 +3,8 @@ namespace Suilven\CricketSite\Model;
 
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\LiteralField;
@@ -51,6 +53,24 @@ class Ground extends DataObject
                 ->enableMulti(true),
             'Content'
         );
+
+
+        /** @var TabSet $rootTab */
+        $rootTab = $fields->first();
+
+        /** @var Tab $mainTab */
+        $mainTab = $rootTab->fieldByName('Main');
+
+        /** @var FieldList $mainTabFields */
+        $mainTabFields = $mainTab->FieldList();
+
+        // move slug to after the name, and set it to read only
+        /** @var FormField $field */
+        $field = $mainTabFields->fieldByName('Slug');
+        $field->setReadonly(true);
+        $mainTabFields->removeByName('Slug');
+        $mainTabFields->insertAfter('Name', $field);
+
 
         return $fields;
     }

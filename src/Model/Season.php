@@ -17,5 +17,7 @@ class Season extends DataObject
         'FinishDate' => 'Date'
     ];
 
-
+    private static $has_many = [
+        'Competitions' => Competition::class
+    ];
 }

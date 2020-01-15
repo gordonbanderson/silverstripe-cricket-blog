@@ -64,7 +64,6 @@ class Match extends Event
     private static $summary_fields = [
         'HomeTeam.Name' => 'Home Team',
         'AwayTeam.Name' => 'Away Team',
-        'When' => 'When',
         'Status' => 'Status',
         'Created' => 'Created'
     ];
@@ -82,14 +81,6 @@ class Match extends Event
         // remove scaffolded fields
         $fields->removeByName('HomeTeamPlayers');
         $fields->removeByName('AwayTeamPlayers');
-
-        // result, when,status,ground,home team, away team, competition fixed
-
-        $fields->addFieldToTab('Root.Main', DatetimeField::create(
-           'When',
-           'Date & Time of Match',
-           $this->When
-        ));
 
         $groundField = DropdownField::create('GroundID', 'Ground', Ground::get()->
             sort('Name')->

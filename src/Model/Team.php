@@ -1,6 +1,8 @@
 <?php
 namespace Suilven\CricketSite\Model;
 
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\FormField;
 use SilverStripe\ORM\DataObject;
 
 class Team extends DataObject
@@ -23,6 +25,28 @@ class Team extends DataObject
         'Name' => 'Name',
         'Slug' => 'Slug'
     ];
+
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+        /** @var TabSet $rootTab */
+        $rootTab = $fields->first();
+
+        /** @var Tab $mainTab */
+        $mainTab = $rootTab->fieldByName('Main');
+
+        /** @var FieldList $mainTabFields */
+        $mainTabFields = $mainTab->FieldList();
+
+        // move slug to after the name, and set it to read only
+        /** @var FormField $field */
+        $field = $mainTabFields->fieldByName('Slug');
+        $field->setReadonly(true);
+        $mainTabFields->removeByName('Slug');
+        $mainTabFields->insertAfter('Name', $field);
+        return $fields;
+    }
 
 
     public function validate() {
