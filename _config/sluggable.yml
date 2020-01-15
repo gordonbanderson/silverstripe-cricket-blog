@@ -5,7 +5,7 @@ Name: cricket-slugs
 Suilven\CricketSite\Model\Competition:
   extensions:
     - Suilven\Sluggable\Extension\Sluggable
-  slug: Name
+  slug: Title
 
 Suilven\CricketSite\Model\Club:
   extensions:

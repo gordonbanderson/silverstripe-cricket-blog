@@ -13,6 +13,7 @@ class Competition extends DataObject
 
     private static $db = [
         'Name' => 'Varchar(255)',
+        'Title' => 'Varchar(255)', // used for slug and display reasons
         'CompetitionType' => "Enum('League,Cup', 'League')",
         'SortOrder' => 'Int'
     ];
@@ -30,8 +31,14 @@ class Competition extends DataObject
     ];
 
     private static $summary_fields = array(
-        'Name'
+        'Name' => 'Name'
     );
+
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+        $this->Title = $this->Season()->Name . ' ' . $this->Name;
+    }
 
     public function getCMSFields()
     {
@@ -58,6 +65,7 @@ class Competition extends DataObject
         $field->setReadonly(true);
         $mainTabFields->removeByName('Slug');
         $mainTabFields->insertAfter('Name', $field);
+        $mainTabFields->removeByName('Title');
 
         // hide sort order
         $mainTabFields->removeByName('SortOrder');
@@ -65,10 +73,5 @@ class Competition extends DataObject
         return $fields;
     }
 
-
-    public function getTitle()
-    {
-        return $this->Name;
-    }
 
 }
