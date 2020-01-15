@@ -17,9 +17,10 @@ use SilverStripe\Forms\TextareaField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\View\HTML;
+use TitleDK\Calendar\Events\Event;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
-class Match extends DataObject
+class Match extends Event
 {
     private static $table_name = 'CricketMatch';
 
@@ -57,7 +58,7 @@ class Match extends DataObject
     ];
 
     private static $belongs_to = [
-        'MatchReport' => MatchReport::class
+        'MatchReport' => MatchReport::class,
     ];
 
     private static $summary_fields = [
