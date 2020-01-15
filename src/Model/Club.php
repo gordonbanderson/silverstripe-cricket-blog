@@ -58,7 +58,7 @@ class Club extends DataObject
     public function validate() {
         $result = parent::validate();
 
-        if(Club::get()->filter(['Name' => $this->Name])->count() > 0) {
+        if(Club::get()->filter(['Name' => $this->Name])->count() > 1) {
             $result->addError('Team Name Must Be Unique');
         }
 
