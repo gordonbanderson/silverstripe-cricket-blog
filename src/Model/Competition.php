@@ -31,8 +31,12 @@ class Competition extends DataObject
     ];
 
     private static $summary_fields = array(
-        'Name' => 'Name'
+        'Title' => 'Title'
     );
+
+    private static $default_sort = [
+        'Title'
+    ];
 
     public function onBeforeWrite()
     {
