@@ -24,9 +24,13 @@ class Ground extends DataObject
        'Clubs' => Club::class,
     ];
 
-    private static $summary_fields = array(
+    private static $summary_fields = [
         'Name'
-    );
+    ];
+
+    private static $default_sort = [
+        'Name'
+    ];
 
     public function getCMSFields()
     {
