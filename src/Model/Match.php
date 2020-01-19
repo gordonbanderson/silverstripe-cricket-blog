@@ -74,6 +74,8 @@ class Match extends Event
     ];
 
 
+
+
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
@@ -81,6 +83,12 @@ class Match extends Event
         // remove scaffolded fields
         $fields->removeByName('HomeTeamPlayers');
         $fields->removeByName('AwayTeamPlayers');
+
+        $fields->addFieldToTab('Root.Main', new DropdownField(
+            'Status',
+            'Match Status:',
+            singleton(Match::class)->dbObject('Status')->enumValues()
+        ));
 
         $groundField = DropdownField::create('GroundID', 'Ground', Ground::get()->
             sort('Name')->
