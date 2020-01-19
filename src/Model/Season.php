@@ -20,4 +20,8 @@ class Season extends DataObject
     private static $has_many = [
         'Competitions' => Competition::class
     ];
+
+    private static $default_sort = [
+        'Name DESC'
+    ];
 }
