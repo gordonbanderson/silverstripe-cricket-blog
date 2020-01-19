@@ -88,7 +88,7 @@ class Innings extends DataObject
         ));
 
         $fowGridCfg = GridFieldConfig_RecordEditor::create();
-        $fields->addFieldToTab('Root.Batting', GridField::create(
+        $fields->addFieldToTab('Root.FOW', GridField::create(
             'FOW',
             'Fall of Wickets',
             $this->FOW()->sort('Runs'),
@@ -137,6 +137,8 @@ class Innings extends DataObject
 
         $bowlingSummaryField = new TextareaField('BowlingSummary', 'Bowling Summary');
         $fields->addFieldToTab('Root.Main', $bowlingSummaryField);
+
+        $fields->removeByName('SortOrder');
 
         return $fields;
     }
