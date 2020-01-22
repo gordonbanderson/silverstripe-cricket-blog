@@ -1,14 +1,14 @@
 <?php
 namespace Suilven\CricketSite\Model;
 
-use SilverStripe\AssetAdmin\Forms\UploadField;
-use SilverStripe\Assets\Image;
+use Level51\Cloudinary\Image;
+use Level51\Cloudinary\UploadField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
-use SilverStripe\View\HTML;
 use SilverStripe\View\Parsers\URLSegmentFilter;
 
 class Player extends DataObject
@@ -57,6 +57,8 @@ class Player extends DataObject
     {
         $fields = parent::getCMSFields();
 
+        $fields->removeByName('PhotoID');
+
         $fields->addFieldToTab('Root.Clubs', GridField::create(
             'Clubs',
             'Clubs for ' . $this->DisplayName,
@@ -66,8 +68,25 @@ class Player extends DataObject
 
         $photoField = UploadField::create('Photo');
         $photoField->setFolderName('player-profile-images');
-        $photoField->setAllowedExtensions(['png', 'jpg', 'jpeg']);
+      //  $photoField->setAllowedExtensions(['png', 'jpg', 'jpeg']);
         $fields->addFieldToTab('Root.Main', $photoField);
+
+        /** @var TabSet $rootTab */
+        $rootTab = $fields->first();
+
+        /** @var Tab $mainTab */
+        $mainTab = $rootTab->fieldByName('Main');
+
+        /** @var FieldList $mainTabFields */
+        $mainTabFields = $mainTab->FieldList();
+
+
+        // move slug to after the name, and set it to read only
+        /** @var FormField $field */
+        $field = $mainTabFields->fieldByName('Slug');
+        $field->setReadonly(true);
+        $mainTabFields->removeByName('Slug');
+        $mainTabFields->insertAfter('Name', $field);
 
         return $fields;
     }
