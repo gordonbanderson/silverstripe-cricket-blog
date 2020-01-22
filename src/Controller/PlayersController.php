@@ -2,11 +2,6 @@
 namespace Suilven\CricketSite\Controller;
 
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Forms\CheckboxSetField;
-use SilverStripe\Forms\GridField\GridField;
-use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
-use SilverStripe\ORM\DataObject;
 use Suilven\CricketSite\Model\Player;
 
 class PlayersController extends \PageController

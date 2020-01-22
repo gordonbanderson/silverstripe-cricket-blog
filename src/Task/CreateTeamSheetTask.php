@@ -8,25 +8,13 @@
 
 namespace Suilven\CricketSite\Task;
 
-use Samwilson\PhpFlickr\PhotosetsApi;
-use Samwilson\PhpFlickr\PhpFlickr;
-use SilverStripe\Assets\Folder;
-use SilverStripe\Assets\Image;
-use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Director;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\DB;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 use Suilven\CricketSite\Model\Match;
 use Suilven\CricketSite\Model\TeamSheetHelper;
-use Suilven\Flickr\Helper\FlickrHelper;
-use Suilven\Flickr\Helper\FlickrSetHelper;
-use Suilven\Flickr\Model\Flickr\FlickrPhoto;
-use Suilven\Flickr\Model\Flickr\FlickrSet;
-use Suilven\Flickr\Model\Site\FlickrSetPage;
 
 
 class CreateTeamSheetTask extends BuildTask

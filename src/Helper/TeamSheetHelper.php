@@ -2,10 +2,8 @@
 
 namespace Suilven\CricketSite\Helper;
 
-use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use SilverStripe\Assets\Storage\DBFile;
-use SilverStripe\ORM\ArrayList;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class TeamSheetHelper

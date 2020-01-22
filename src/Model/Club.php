@@ -1,7 +1,6 @@
 <?php
 namespace Suilven\CricketSite\Model;
 
-use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\GridField\GridField;

@@ -13,7 +13,6 @@ use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DB;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
-use Suilven\CricketSite\Helper\ImportScorecardHelper;
 use Suilven\CricketSite\Model\Match;
 use TitleDK\Calendar\Events\Event;
 

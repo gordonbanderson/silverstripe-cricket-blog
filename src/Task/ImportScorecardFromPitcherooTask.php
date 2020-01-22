@@ -12,7 +12,6 @@ use SilverStripe\Control\Director;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
-use Suilven\CricketSite\Helper\ImportScorecardHelper;
 use Suilven\CricketSite\Helper\ImportScorecardPitcherooHelper;
 
 

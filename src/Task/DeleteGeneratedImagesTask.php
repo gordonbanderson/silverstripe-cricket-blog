@@ -2,17 +2,17 @@
 
 namespace Suilven\CricketSite\Task;
 
-use SilverStripe\Control\Director;
-use SilverStripe\Dev\BuildTask;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Security\Permission;
-use SilverStripe\Assets\Image;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Assets\Flysystem\FlysystemAssetStore;
-use ReflectionMethod;
-use SilverStripe\Assets\Storage\AssetStore;
 use League\Flysystem\Filesystem;
+use ReflectionMethod;
+use SilverStripe\Assets\Flysystem\FlysystemAssetStore;
+use SilverStripe\Assets\Image;
+use SilverStripe\Assets\Storage\AssetStore;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\BuildTask;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 
 /**

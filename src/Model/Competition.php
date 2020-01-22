@@ -2,7 +2,6 @@
 namespace Suilven\CricketSite\Model;
 
 use SilverStripe\Forms\CheckboxSetField;
-use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormField;
 use SilverStripe\ORM\DataObject;

@@ -1,14 +1,13 @@
 <?php
 namespace Suilven\CricketSite\SiteConfig;
 
+use MadeHQ\Cloudinary\Model\ImageLink;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
 use SilverStripe\Core\Extension;
-use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use Suilven\CricketSite\Model\Club;
-use Suilven\CricketSite\Model\Team;
 
 class CricketSiteConfig extends Extension {
     private static $has_one = [
