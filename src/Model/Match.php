@@ -1,22 +1,14 @@
 <?php
 namespace Suilven\CricketSite\Model;
 
-use SilverStripe\AssetAdmin\Forms\UploadField;
-use SilverStripe\Assets\Image;
-use SilverStripe\Forms\DatetimeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
-use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
-use SilverStripe\Forms\GridField\GridFieldDataColumns;
-use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\View\HTML;
 use TitleDK\Calendar\Events\Event;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
@@ -27,7 +19,7 @@ class Match extends Event
     private static $db = [
         'Result' => 'Text',
         'When' => 'Datetime',
-        'Status' => "Enum('Fixture,Live,Result,Cancelled,Abandoned','Fixture')",
+        'Status' => "Enum('Fixture,Live,Result,Cancelled,Abandoned,Postponed','Fixture')",
         'Description' => 'Varchar(255)'
     ];
 
