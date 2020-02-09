@@ -2,9 +2,12 @@
 namespace Suilven\CricketSite\Controller;
 
 use Carbon\Carbon;
+use SilverStripe\CMS\Controllers\CMSPagesController;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\ArrayData;
 use Smindel\GIS\GIS;
 use Suilven\CricketSite\Model\Ground;
 use Suilven\DarkSky\API\DarkSkyAPI;
@@ -15,15 +18,79 @@ use VertigoLabs\Overcast\Forecast;
 class GroundsController extends \PageController
 {
     private static $allowed_actions = [
-        'forecast'
+        'forecast',
+        'index'
     ];
+
+    public function Breadcrumbs() {
+        $items = new ArrayList();
+
+        $items->push(new ArrayData([
+            'Title' => 'Grounds',
+            'MenuTitle' => 'Grounds',
+            'Link' => 'grounds'
+        ]));
+
+        $items;
+    }
+
+    public function GroundsWithLocation()
+    {
+        //$players = Player::get()->filter('FirstName:not', ['Sam', null]);
+        return Ground::get()->sort('Name')->filter('Location:not', null);
+    }
+
+    public function index(HTTPRequest $request)
+    {
+        $do = new DataObject();
+        $do->Link = "/grounds/";
+        $do->MenuTitle = 'Grounds';
+        $do->isSelf = true;
+        $this->AddBreadcrumbAfter($do);
+        $grounds = $this->GroundsWithLocation();
+
+        $groundsForMap = [];
+        foreach($grounds as $ground) {
+            $groundArr = [
+              'Name' => $ground->Name,
+              'Link' => $ground->Link(),
+              'Latitude' => $ground->Latitude,
+              'Longitude' => $ground->Longitude
+            ];
+            $groundsForMap[] = $groundArr;
+        }
+
+        return [
+            'Grounds' => $grounds,
+            'GroundData' => json_encode($groundsForMap)
+        ];
+    }
+
 
     public function forecast(HTTPRequest $request)
     {
-        $config = SiteConfig::current_site_config();
 
         /** @var Ground $ground */
         $ground = $this->getGroundFromSlug($request);
+
+
+
+        $do = new DataObject();
+        $do->Link = "/grounds";
+        $do->MenuTitle = "Grounds";
+        $do->isSelf = false;
+        $this->AddBreadcrumbAfter($do);
+
+
+        $do = new DataObject();
+        $do->Link = "/grounds/" . $ground->Slug;
+        $do->MenuTitle = $ground->Title;
+        $do->isSelf = true;
+        $this->AddBreadcrumbAfter($do);
+
+
+        $config = SiteConfig::current_site_config();
+
 
         $location = $ground->Location;
         $coordinates = GIS::create($location)->coordinates;
@@ -68,21 +135,20 @@ class GroundsController extends \PageController
 
             $parsed = Carbon::parse($record->When);
             $labels[] = $parsed->format('H:i');
-            $windSpeeds[] = $record->WindSpeed;
-            $windAngles[] = $record->WindBearing-90; // 0 in CSS is to the right, 0 in geo terms is up, aka north
+            $windSpeeds[] = $record->Rounded($record->WindSpeed, 1);
+            $windAngles[] = $record->WindBearing+90; // 0 in CSS is to the right, 0 in geo terms is up, aka north
 
             $rainProbabilityData[] = 100 * $record->PrecipitationProbablity;
-            $rainIntensityData[] = 100 * $record->PrecipitationIntensity;
+            $rainIntensityData[] = $record->Rounded(100*$record->PrecipitationIntensity, 2);
         }
 
         $speedChartData['labels'] = $labels;
-        $speedChartData['labelString'] = 'Runs NOT';
         $speedChartData['datasets'] = [
             [
                 'label' => 'Wind Speed and Direction',
                 'data' => $windSpeeds,
                 'angles' => $windAngles,
-                'backgroundColor' => '#00B',
+                'backgroundColor' => '#9f305b',
                 'fill' => false
             ]
         ];
@@ -90,53 +156,91 @@ class GroundsController extends \PageController
             'title' => [
                 'display' => true,
                 'text' => 'Wind Speed (m/s)'
+            ],
+            'scales' => [
+                'yAxes' => [
+                    ['ticks' => [
+                        'beginAtZero' => true
+                    ]
+                    ]
+                ]
+            ],
+            'legend' => [
+                'display' => false
             ]
         ];
 
 
-        /*
-         *       [ID] => 0
-            [ClassName] => Suilven\DarkSky\Model\WeatherDataPoint
-            [RecordClassName] => Suilven\DarkSky\Model\WeatherDataPoint
-            [CloudCoverage] => 0.9
-            [CurrentTemperature] => 7.33
-            [DewPoint] => 4.39
-            [Humidity] => 0.82
-            [Icon] => cloudy
-            [MaxTemperature] =>
-            [MinTemperature] =>
-            [FeelsLikeTemperature] => 3.23
-            [MoonPhase] =>
-            [PrecipitationIntensity] => 0.0526
-            [PrecipitationProbablity] => 0.13
-            [Visibility] => 10
-            [When] => 2020-01-11 19:00:00
-            [WindSpeed] => 17.61
-            [WindBearing] => 236
-         */
-
-        $rainChartData['labels'] = $labels;
-        $rainChartData['labelString'] = 'Runs NOT';
-        $rainChartData['datasets'] = [
+        $rainProbabilityChartData['labels'] = $labels;
+        $rainProbabilityChartData['datasets'] = [
             [
                 'label' => 'Probability',
                 'data' => $rainProbabilityData,
-                'backgroundColor' => '#007',
-                'fill' => false
-            ],
-            [
-                'label' => 'Intensity',
-                'data' => $rainIntensityData,
-                'backgroundColor' => 'maroon',
+                'backgroundColor' => '#000099',
+                'borderColor' => '#000099',
+
+
                 'fill' => false
             ]
         ];
 
-        $rainChartData['options'] = [
+        $rainProbabilityChartData['options'] = [
             'title' => [
                 'display' => true,
-                'text' => 'Rain Probability and Intensity'
+                'text' => 'Rain Probability (%)'
+            ],
+            'scales' => [
+                'yAxes' => [
+                    ['ticks' => [
+                        'beginAtZero' => true,
+                        'max' => 100
+                    ]
+                    ]
+                ]
+            ],
+            'legend' => [
+                'display' => false
             ]
+        ];
+
+        $rainIntensityChartData['labels'] = $labels;
+        $rainIntensityChartData['datasets'] = [
+            [
+                'label' => 'Probability',
+                'data' => $rainIntensityData,
+                'backgroundColor' => '#000099',
+                'borderColor' => '#000099',
+
+
+                'fill' => false
+            ]
+        ];
+
+        $rainIntensityChartData['options'] = [
+            'title' => [
+                'display' => true,
+                'text' => 'Rain Intensity (mm/h)'
+            ],
+            'scales' => [
+                'yAxes' => [
+                    ['ticks' => [
+                        'beginAtZero' => true,
+                    ]
+                    ]
+                ]
+            ],
+            'maintainAspectRatiomaintainAspectRatio' => false,
+            'legend' => [
+                'display' => false
+            ]
+        ];
+
+        // encode this in a similar manner to multiple coordinates
+        $groundArr = [
+            'Name' => $ground->Name,
+            'Link' => $ground->Link,
+            'Latitude' => $ground->Latitude,
+            'Longitude' => $ground->Longitude
         ];
 
         return [
@@ -145,7 +249,9 @@ class GroundsController extends \PageController
             'DailyForecast' => $dailyForecast,
             'HourlyForecast' => $hourlyForecast,
             'Ground' => $ground,
-            'RainChartData' => json_encode($rainChartData),
+            'GroundData' => json_encode([$groundArr]),
+            'RainProbabilityData' => json_encode($rainProbabilityChartData),
+            'RainIntensityData' => json_encode($rainIntensityChartData),
             'WeatherChartData' => json_encode($speedChartData),
             'TemperatureChartData' => json_encode($temperatureChartData)
         ];

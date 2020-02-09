@@ -1,6 +1,7 @@
 <?php
 namespace Suilven\CricketSite\Model;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\GridField\GridField;
@@ -82,5 +83,85 @@ class Ground extends DataObject
         $coordinates = GIS::create($location)->coordinates;
         return json_encode($coordinates);
     }
+
+    public function HasGeo()
+    {
+        return !is_null($this->Location);
+    }
+
+    public function getLatitude()
+    {
+        $location = $this->Location;
+        $coordinates = GIS::create($location)->coordinates;
+        return $coordinates[0];
+    }
+
+    public function getLongitude()
+    {
+        $location = $this->Location;
+        $coordinates = GIS::create($location)->coordinates;
+        return $coordinates[1];
+    }
+
+    public function Link()
+    {
+        return '/grounds/forecast/'.$this->Slug;
+    }
+
+    public function LinkingMode()
+    {
+        return Controller::curr()->getRequest()->param('ID') == $this->Slug ? 'current' : 'link';
+    }
+
+    public function PrevGround()
+    {
+        // @todo Make this more efficient
+        $grounds = Ground::get()->sort('Name DESC')->filter('Location:not', null);
+        $nextGround = null;
+        $foundCurrent = false;
+        foreach($grounds as $ground)
+        {
+
+            if ($foundCurrent == true) {
+                $foundCurrent = false;
+                $nextGround = $ground;
+                break;
+            }
+
+            if ($ground->ID == $this->ID) {
+                $foundCurrent = true;
+            }
+
+        }
+
+        return $nextGround;
+
+    }
+
+    public function NextGround()
+    {
+        // @todo Make this more efficient
+        $grounds = Ground::get()->sort('Name')->filter('Location:not', null);
+        $nextGround = null;
+        $foundCurrent = false;
+        foreach($grounds as $ground)
+        {
+
+            if ($foundCurrent == true) {
+                $foundCurrent = false;
+                $nextGround = $ground;
+                break;
+            }
+
+            if ($ground->ID == $this->ID) {
+                $foundCurrent = true;
+            }
+
+        }
+
+        return $nextGround;
+
+    }
+
 
 }

@@ -68,7 +68,6 @@ class Player extends DataObject
 
         $photoField = UploadField::create('Photo');
         $photoField->setFolderName('player-profile-images');
-      //  $photoField->setAllowedExtensions(['png', 'jpg', 'jpeg']);
         $fields->addFieldToTab('Root.Main', $photoField);
 
         /** @var TabSet $rootTab */

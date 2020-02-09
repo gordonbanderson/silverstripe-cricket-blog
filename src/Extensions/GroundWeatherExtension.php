@@ -12,6 +12,9 @@ use VertigoLabs\Overcast\Forecast;
 
 class GroundWeatherExtension extends Extension {
 
+
+
+
     public function GroundWeather($slug)
     {
         $ground = Ground::get()->filter('Slug', $slug)->first();
@@ -38,6 +41,7 @@ class GroundWeatherExtension extends Extension {
 
         return $this->owner->customise(new ArrayData([
             'Name' => $ground->Name,
+            'Slug' => $ground->Slug,
             'Weather' => $record
         ]))->renderWith('Includes/WeatherStationSmall');
     }
