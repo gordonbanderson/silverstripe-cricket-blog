@@ -16,6 +16,7 @@ use Suilven\CricketSite\Model\InningsBattingEntry;
 use Suilven\CricketSite\Model\InningsBowlingEntry;
 use Suilven\CricketSite\Model\Match;
 use Suilven\CricketSite\Model\Player;
+use Suilven\CricketSite\Model\Season;
 use Suilven\CricketSite\Model\Team;
 use Suilven\Sluggable\Helper\SluggableHelper;
 
@@ -37,8 +38,137 @@ class ImportScorecardHelper
     {
         $spreadsheet = IOFactory::load($spreadsheetFilePath);
 
+        $this->checkScorecard($spreadsheet);
         $this->parseOverview($spreadsheet);
         $this->parseAllInnings($spreadsheet);
+    }
+
+
+    public function checkScorecard($spreadsheet)
+    {
+        $errors = false;
+
+        // check clubs
+        $sheet = $spreadsheet->getSheet(0);
+        $homeClubName = $sheet->getCell('B1')->getCalculatedValue();
+        if (Club::get()->filter(['Name' => $homeClubName] )->count() != 1) {
+            error_log('HOME CLUB "' . $homeClubName . '" not found');
+            $errors = true;
+        }
+
+        $awayClubName = $sheet->getCell('B2')->getCalculatedValue();
+        $this->awayClub = $this->createOrGetClubBySlug($awayClubName);
+        if (Club::get()->filter(['Name' => $awayClubName] )->count() != 1) {
+            error_log('AWAY CLUB "' . $awayClubName . '" not found');
+            $errors = true;
+        }
+
+        // check teams
+        $homeTeamName = $homeClubName . ' ' . $sheet->getCell('B3')->getCalculatedValue();
+        $awayTeamName = $awayClubName . ' ' . $sheet->getCell('B4')->getCalculatedValue();
+
+        if (Team::get()->filter(['Name' => $homeTeamName] )->count() != 1) {
+            error_log('COUNT: ' . Team::get()->filter(['Name' => $homeTeamName] )->count() );
+            error_log('HOME TEAM "' . $homeTeamName . '" not found');
+            $errors = true;
+        }
+
+        if (Team::get()->filter(['Name' => $awayTeamName] )->count() != 1) {
+            error_log('AWAY TEAM "' . $awayTeamName . '" not found');
+            $errors = true;
+        }
+
+
+        $groundName = $sheet->getCell('B5')->getCalculatedValue();
+        if (Ground::get()->filter(['Name' => $groundName])->count() != 1) {
+            error_log('GROUND "' . $groundName . ' " not found');
+            $errors = true;
+        }
+
+
+
+
+
+        // @todo Season is missing
+        $competitionName = $sheet->getCell('B6')->getCalculatedValue();
+        $year = $sheet->getCell('B7')->getCalculatedValue();
+        $season = Season::get()->filter(['Name' => $year])->first();
+        if (empty($season)) {
+            error_log('SEASON " ' . $year . '" does not exist');
+            $errors = true;
+        }
+
+        $competitionName = $year . ' ' . $competitionName;
+        if ($season->Competitions()->filter(['Title' => $competitionName])->count() != 1) {
+            error_log('COMPETITION "' . $competitionName . '" not found');
+            $errors = true;
+        }
+
+        $errors = $errors || $this->checkPlayersBatting($spreadsheet->getSheet(1));
+        $errors = $errors || $this->checkPlayersBatting($spreadsheet->getSheet(2));
+        $errors = $errors || $this->checkPlayersBowling($spreadsheet->getSheet(1));
+        $errors = $errors || $this->checkPlayersBowling($spreadsheet->getSheet(2));
+        $errors = $errors || $this->checkPlayersFOW($spreadsheet->getSheet(1));
+        $errors = $errors || $this->checkPlayersFOW($spreadsheet->getSheet(2));
+
+        if ($errors) {
+            error_log('Errors were found');
+            die;
+        }
+
+    }
+
+
+    private function checkPlayersBatting($sheet)
+    {
+        $errors = false;
+        for ($i = 4; $i <= 14; $i++) {
+            $playerName = $sheet->getCell('A' . $i)->getCalculatedValue();
+            error_log('BATTING PLAYER: ' . $playerName);
+            if (!empty($playerName) && Player::get()->filter(['DisplayName' => $playerName])->count() != 1) {
+                error_log('BATTING PLAYER "' . $playerName . '" NOT FOUND');
+                $errors = true;
+            }
+        }
+
+        return $errors;
+    }
+
+
+    private function checkPlayersBowling($sheet)
+    {
+        $errors = false;
+
+        for ($i = 44; $i <= 54; $i++) {
+            $playerName = $sheet->getCell('A' . $i)->getCalculatedValue();
+
+            error_log('BOWLING PLAYER: ' . $playerName);
+            if (!empty($playerName) && Player::get()->filter(['DisplayName' => $playerName])->count() != 1) {
+                error_log('BOWLING PLAYER "' . $playerName . '" NOT FOUND');
+                $errors = true;
+            }
+        }
+
+        return $errors;
+    }
+
+
+    private function checkPlayersFOW($sheet)
+    {
+        $errors = false;
+
+
+        for ($i = 30; $i <= 39; $i++) {
+            $playerName = $sheet->getCell('B' . $i)->getCalculatedValue();
+
+            error_log('FOW PLAYER: ' . $playerName);
+            if (!empty($playerName) && Player::get()->filter(['DisplayName' => $playerName])->count() != 1) {
+                error_log('BOWLING PLAYER "' . $playerName . '" NOT FOUND');
+                $errors = true;
+            }
+        }
+
+        return $errors;
     }
 
     /**
@@ -68,15 +198,38 @@ class ImportScorecardHelper
         $groundName = $sheet->getCell('B5')->getCalculatedValue();
         $this->ground = $this->createOrGetGroundBySlug($this->homeClub, $groundName);
 
-        $competitionName = $sheet->getCell('B6')->getCalculatedValue();
+        $seasonName = $sheet->getCell('B7')->getCalculatedValue();
+        $competitionName = $seasonName . ' ' . $sheet->getCell('B6')->getCalculatedValue();
+
         $this->competition = $this->createOrGetCompetitionBySlug($competitionName);
 
+        error_log('SEASON: ' . $seasonName);
+        $when = $sheet->getCell('B8')->getCalculatedValue() . ' 12:00:00';
+
+        $resultDescription = $sheet->getCell('B9')->getCalculatedValue();
+
+        error_log('**** RESULT DEC ****' . $resultDescription);
+
+
         $this->match = new Match();
+        $this->match->Duration = '08:00:00';
+        $this->match->TimeFrameType = 'Duration';
+        error_log('WHEN: ' . $when);
+
         $this->match->Competition = $this->competition;
         $this->match->Ground = $this->ground;
         $this->match->HomeTeam = $this->homeTeam;
         $this->match->AwayTeam = $this->awayTeam;
+        $this->match->Summary = $resultDescription;
+
+        //$when = '19/5/2018';
+        $this->match->When = $when;
+        $this->match->StartDateTime = $when;
+
+        error_log('WHEN=' . $when);
         $this->match->write();
+
+        $this->competition->Matches()->add($this->match);
 
         /**
          * @todo
@@ -108,7 +261,7 @@ class ImportScorecardHelper
      */
     private function createOrGetCompetitionBySlug($fieldValue)
     {
-        return $this->createOrGetBySlug(Competition::class, $fieldValue, 'Name');
+        return $this->createOrGetBySlug(Competition::class, $fieldValue, 'Title');
     }
 
 
@@ -172,7 +325,8 @@ class ImportScorecardHelper
             error_log('.... Model for ' . $fieldValue . ' found');
             return $model;
         } else {
-            error_log('.... Model for ' . $fieldValue . ' not found');
+            error_log('.... Model ' . $clazz .' for ' . $fieldValue . ' not found');
+            //die;
             /** @var DataObject $instance */
             $instance = $clazz::create([$fieldName => $fieldValue]);
             error_log($fieldName . ' ' . $fieldValue);
@@ -219,6 +373,13 @@ class ImportScorecardHelper
 
         $innings->TotalRuns = $sheet->getCell('F23')->getCalculatedValue();
         $innings->TotalWickets = $sheet->getCell('F24')->getCalculatedValue();
+
+        $oversAndBalls = $sheet->getCell('F25')->getCalculatedValue();
+        $overs = (int) $oversAndBalls;
+        $balls = ($oversAndBalls - $overs) * 10;
+
+        $innings->TotalOvers = $overs;
+        $innings->TotalBalls = $balls;
 
         // @todo Overs
 

@@ -13,6 +13,7 @@ class Competition extends DataObject
     private static $db = [
         'Name' => 'Varchar(255)',
         'Title' => 'Varchar(255)', // used for slug and display reasons
+        'ShortTitle' => 'Varchar(255)', // brief version of the title
         'CompetitionType' => "Enum('League,Cup', 'League')",
         'SortOrder' => 'Int'
     ];

@@ -210,8 +210,6 @@ class GroundsController extends \PageController
                 'data' => $rainIntensityData,
                 'backgroundColor' => '#000099',
                 'borderColor' => '#000099',
-
-
                 'fill' => false
             ]
         ];
@@ -223,9 +221,9 @@ class GroundsController extends \PageController
             ],
             'scales' => [
                 'yAxes' => [
-                    ['ticks' => [
-                        'beginAtZero' => true,
-                    ]
+                        ['ticks' => [
+                            'beginAtZero' => true,
+                        ]
                     ]
                 ]
             ],

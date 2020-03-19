@@ -20,7 +20,10 @@ class Match extends Event
         'Result' => 'Text',
         'When' => 'Datetime',
         'Status' => "Enum('Fixture,Live,Result,Cancelled,Abandoned,Postponed','Fixture')",
-        'Description' => 'Varchar(255)'
+        'Description' => 'Varchar(255)',
+        'Source' => 'Varchar(255)',
+        'Summary' => 'Varchar(255)',
+        'Toss' => 'Varchar(255)'
     ];
 
     private static $has_one = [
@@ -228,7 +231,7 @@ class Match extends Event
         $date = 'UNKNOWN ';
         if (!empty($this->StartDateTime)) {
             $when = strtotime($this->StartDateTime);
-            $date = date('Ymd - ', $when);
+            $date = date('Ymd - ', $when) . ' ' . rand(100000, 4);
         }
         $this->Description = $date . ' ' .
             $this->HomeTeam()->Name . ' v ' . $this->AwayTeam()->Name .' ,' .

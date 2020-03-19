@@ -65,7 +65,8 @@ class ImportScorecardPitcherooHelper
         $level2Divs = $level3Divs->find('div');
         $bowlingCard = $level2Divs[3];
         $entries = $bowlingCard->find('div');
-        for ($i=1; $i<sizeof($bowlingCard); $i++) {
+        $nEntries = count($bowlingCard);
+        for ($i=1; $i<$nEntries; $i++) {
             $entry = $entries[$i];
             $entryDivs = $entry->find('div')[0]->find('div');
 
